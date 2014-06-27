@@ -1,16 +1,15 @@
 #include "reflectortab.h"
+
 #include "reflector.h"
-#include "mainwindow.h"
 #include "settings.h"
-#include <QLabel>
-#include <QLineEdit>
+
 #include <QDoubleSpinBox>
 #include <QGridLayout>
+#include <QLabel>
+#include <QLineEdit>
 
-ReflectorTab::ReflectorTab(Reflector *reflector, MainWindow *mainWindow, QWidget *parent) :
-    QWidget(parent),
-    m_reflector(reflector),
-    m_mainWindow(mainWindow)
+ReflectorTab::ReflectorTab(QWidget *parent) :
+    QWidget(parent)
 {
     m_layout = new QGridLayout(this);
 
@@ -44,36 +43,10 @@ ReflectorTab::ReflectorTab(Reflector *reflector, MainWindow *mainWindow, QWidget
     m_layout->addWidget(m_angleLabel, 2, 0);
     m_layout->addWidget(m_angleSpinBox, 2, 1);
 
-    connect(m_nameLineEdit, SIGNAL(editingFinished()), this, SLOT(nameEditingFinished()));
-    connect(m_xSpinBox, SIGNAL(valueChanged(double)), this, SLOT(xValueChanged(double)));
-    connect(m_ySpinBox, SIGNAL(valueChanged(double)), this, SLOT(yValueChanged(double)));
-    connect(m_angleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(angleValueChanged(double)));
-
     setLayout(m_layout);
 }
 
 ReflectorTab::~ReflectorTab()
 {
-}
-
-void ReflectorTab::nameEditingFinished()
-{
-    if(!m_nameLineEdit->text().isEmpty())
-        emit newLabel(this, m_nameLineEdit->text());
-}
-
-void ReflectorTab::xValueChanged(double value)
-{
-    m_reflector->setX(value);
-}
-
-void ReflectorTab::yValueChanged(double value)
-{
-    m_reflector->setY(value);
-}
-
-void ReflectorTab::angleValueChanged(double value)
-{
-    m_reflector->setRotation(value);
 }
 

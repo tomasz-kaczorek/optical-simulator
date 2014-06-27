@@ -1,17 +1,12 @@
 #include "planemirror.h"
+
+#include "label.h"
 #include "ray.h"
 #include "settings.h"
+
 #include <QPainter>
 #include <QPainterPath>
 #include <QPainterPathStroker>
-
-PlaneMirror::PlaneMirror(qreal x, qreal y, qreal angle, qreal radius, QGraphicsItem *parent) :
-    Reflector(parent),
-    m_radius(radius)
-{
-    setPos(x, y);
-    setRotation(angle);
-}
 
 PlaneMirror::PlaneMirror(QGraphicsItem *parent) :
     Reflector(parent)
@@ -29,10 +24,9 @@ qreal PlaneMirror::radius()  const
 
 void PlaneMirror::setRadius(qreal radius)
 {
+    if(m_radius == radius) return
     prepareGeometryChange();
     m_radius = radius;
-    m_left = leftEdge();
-    m_right = rightEdge();
 }
 
 QPointF PlaneMirror::leftEdge() const
@@ -45,12 +39,20 @@ QPointF PlaneMirror::rightEdge() const
     return mapToScene(QPointF(0.0, m_radius));
 }
 
+void PlaneMirror::geometryChanged()
+{
+    m_left = leftEdge();
+    m_right = rightEdge();
+    m_label->geometryChanged();
+}
+
 qreal PlaneMirror::intersectionDistance(Ray const *ray) const
 {
-    qreal rx = ray->x1(); //x coordinate of ray starting point
-    qreal ry = ray->y1(); //y coordinate of ray starting point
-    qreal rdx = ray->dx(); //horizontal component of the ray's vector
-    qreal rdy = ray->dy(); //vertical component of the ray's vector
+    QLineF vector = ray->line();
+    qreal rx = vector.x1(); //x coordinate of ray starting point
+    qreal ry = vector.y1(); //y coordinate of ray starting point
+    qreal rdx = vector.dx(); //horizontal component of the ray's vector
+    qreal rdy = vector.dy(); //vertical component of the ray's vector
     //calculate on which side of a ray do the mirror's edges lie
     qreal l = rdy * (m_left.x() - rx) - rdx * (m_left.y() - ry);
     qreal r = rdy * (m_right.x() - rx) - rdx * (m_right.y() - ry);
@@ -64,12 +66,14 @@ qreal PlaneMirror::intersectionDistance(Ray const *ray) const
     return (mdx * ry - mdy * rx + mdy * mx - mdx * my) / (mdy * rdx - mdx * rdy);
 }
 
-void PlaneMirror::reflectionVector(Ray *ray, QList<Ray *> *rays) const
+void PlaneMirror::reflectionVector(Ray *ray, bool *orders) const
 {
-    qreal rx = ray->x1(); //x coordinate of ray starting point
-    qreal ry = ray->y1(); //y coordinate of ray starting point
-    qreal mx = ray->x2(); //x coordinate of ray-mirror intersection point
-    qreal my = ray->y2(); //y coordinate of ray-mirror intersection point
+    if(!orders[0]) return;
+    QLineF vector = ray->line();
+    qreal rx = vector.x1(); //x coordinate of ray starting point
+    qreal ry = vector.y1(); //y coordinate of ray starting point
+    qreal mx = vector.x2(); //x coordinate of ray-mirror intersection point
+    qreal my = vector.y2(); //y coordinate of ray-mirror intersection point
     qreal mdx = m_left.x() - mx; //horizontal component of the line between mirror's edges
     qreal mdy = m_left.y() - my; //vertical component of the line between mirror's edges
     //calculate on which side of a mirror does the ray begin
@@ -83,17 +87,7 @@ void PlaneMirror::reflectionVector(Ray *ray, QList<Ray *> *rays) const
     //parabola's tip is located at d = -b / 2 * a
     qreal d = (mdx * (rx - mx) + mdy * (ry - my)) / (mdx * mdx + mdy * mdy);
     //reflection ray's heading is located twice as far from (rx, ry) as (x, y)
-    rays->append(ray->addNext(2 * (mx + d * mdx) - rx, 2 * (my + d * mdy) - ry));
-}
-
-QVariant PlaneMirror::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
-{
-    if(change == ItemPositionHasChanged || change == ItemRotationHasChanged)
-    {
-        m_left = leftEdge();
-        m_right = rightEdge();
-    }
-    return value;
+    ray->reflect(2 * (mx + d * mdx) - rx, 2 * (my + d * mdy) - ry);
 }
 
 QRectF PlaneMirror::boundingRect() const

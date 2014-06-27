@@ -1,9 +1,11 @@
 #include "reflector.h"
 
+#include "label.h"
+#include "settings.h"
+
 Reflector::Reflector(QGraphicsItem *parent) :
-    QGraphicsItem(parent)
+    OpticalDevice(parent)
 {
-    setFlag(ItemSendsGeometryChanges, true);
 }
 
 Reflector::~Reflector()

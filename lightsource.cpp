@@ -5,117 +5,44 @@
 #include "settings.h"
 #include "ray.h"
 
-LightSource::LightSource(QList<Reflector *> *reflectors, QGraphicsItem *parent) :
-    QGraphicsItem(parent),
-    m_reflectors(reflectors),
-    m_wavelength(Settings::minWavelength),
-    m_quantity(Settings::minQuantity),
-    m_beginAngle(0.0),
-    m_endAngle(0.0),
-    m_visibleOrders{false, false, true, false, false},
-    m_active(true)
+LightSource::LightSource(QGraphicsItem *parent) :
+    OpticalDevice(parent)
 {
-    m_color = wavelengthColor(380.0, 0.75);
 }
 
 LightSource::~LightSource()
 {
 }
 
-void LightSource::plotRays()
+void LightSource::addRay(qreal angle)
 {
-    QList<Ray *> rays(m_rays);
-    Ray *ray;
-    qreal distance;
-    qreal bestDistance;
-    Reflector *reflector;
-    Reflector *bestReflector;
-    while(!rays.isEmpty())
+    Ray *ray = new Ray(this, x(), y(), angle);
+    m_rays.append(ray);
+    scene()->addItem(ray);
+}
+
+void LightSource::clearRays()
+{
+    for(int i = m_rays.size(); i > 0; --i)
     {
-        ray = rays.takeFirst();
-        bestDistance = std::numeric_limits<double>::infinity();
-        bestReflector = nullptr;
-        for(int i = 0; i < m_reflectors->size(); i++)
+        Ray *ray = m_rays.takeFirst();
+        scene()->removeItem(ray);
+        delete ray;
+    }
+}
+
+void LightSource::geometryChanged()
+{
+    clearRays();
+    if(m_quantity == 1) addRay(m_beginAngle);
+    else
+    {
+        for (int i = 0; i < m_quantity; i++)
         {
-            reflector = m_reflectors->at(i);
-            distance = reflector->intersectionDistance(ray);
-            if(Settings::greaterThanZero(distance) && distance < bestDistance)
-            {
-                bestDistance = distance;
-                bestReflector = reflector;
-            }
+            addRay(m_beginAngle + (m_endAngle - m_beginAngle) * i / (m_quantity - 1));
         }
-        ray->adjust(bestDistance);
-        bestReflector->reflectionVector(ray, &rays);
     }
-}
-
-void LightSource::setBeginAngle(qreal beginAngle)
-{
-    m_beginAngle = beginAngle;
-    while(!m_rays.isEmpty()) delete m_rays.takeLast();
-    Ray *ray = new Ray(x(), y(), x() + 10.0, y(), m_color, Qt::SolidLine);
-    ray->setAngle(m_beginAngle);
-    m_rays.append(ray);
-    scene()->addItem(ray);
-    for (int i = 1; i < m_quantity; i++)
-    {
-        ray = new Ray(x(), y(), x() + 10.0, y(), m_color, Qt::SolidLine);
-        ray->setAngle(m_beginAngle + (m_endAngle - m_beginAngle) * i / (m_quantity - 1));
-        m_rays.append(ray);
-        scene()->addItem(ray);
-    }
-}
-
-void LightSource::setEndAngle(qreal endAngle)
-{
-    m_endAngle = endAngle;
-    while(!m_rays.isEmpty()) delete m_rays.takeLast();
-    Ray *ray = new Ray(x(), y(), x() + 10.0, y(), m_color, Qt::SolidLine);
-    ray->setAngle(m_beginAngle);
-    m_rays.append(ray);
-    scene()->addItem(ray);
-    for (int i = 1; i < m_quantity; i++)
-    {
-        ray = new Ray(x(), y(), x() + 10.0, y(), m_color, Qt::SolidLine);
-        ray->setAngle(m_beginAngle + (m_endAngle - m_beginAngle) * i / (m_quantity - 1));
-        m_rays.append(ray);
-        scene()->addItem(ray);
-    }
-}
-
-void LightSource::setQuantity(int quantity)
-{
-    m_quantity = quantity;
-    while(!m_rays.isEmpty()) delete m_rays.takeLast();
-    Ray *ray = new Ray(x(), y(), x() + 10.0, y(), m_color, Qt::SolidLine);
-    ray->setAngle(m_beginAngle);
-    m_rays.append(ray);
-    scene()->addItem(ray);
-    for (int i = 1; i < m_quantity; i++)
-    {
-        ray = new Ray(x(), y(), x() + 10.0, y(), m_color, Qt::SolidLine);
-        ray->setAngle(m_beginAngle + (m_endAngle - m_beginAngle) * i / (m_quantity - 1));
-        m_rays.append(ray);
-        scene()->addItem(ray);
-    }
-}
-
-void LightSource::setWavelength(qreal wavelength)
-{
-    m_wavelength = wavelength;
-    m_color = wavelengthColor(wavelength, 0.75);
-    update();
-}
-
-void LightSource::setVisibleOrders(int order, bool visible)
-{
-    m_visibleOrders[order + 2] = visible;
-}
-
-void LightSource::setActive(bool active)
-{
-    m_active = active;
+    if(m_active) foreach(Ray *ray, m_rays) ray->plot();
 }
 
 QRectF LightSource::boundingRect() const
@@ -125,7 +52,7 @@ QRectF LightSource::boundingRect() const
 
 void LightSource::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    painter->setPen(QPen(m_color, Settings::itemPenWidth + 5, Qt::SolidLine, Qt::RoundCap));
+    painter->setPen(QPen(Qt::black, Settings::itemPenWidth + 5, Qt::SolidLine, Qt::RoundCap));
     painter->drawPoint(0.0, 0.0);
 }
 

@@ -11,20 +11,26 @@ Absorber::Absorber(qreal x1, qreal y1, qreal x2, qreal y2)
 
 QPointF Absorber::leftEdge() const
 {
-    return QPointF(0.0, 0.0);
+    return m_left;
 }
 
 QPointF Absorber::rightEdge() const
 {
-    return QPointF(0.0, 0.0);
+    return m_right;
+}
+
+void Absorber::geometryChanged()
+{
+    return; //item should not be changed
 }
 
 qreal Absorber::intersectionDistance(const Ray *ray) const
 {
-    qreal rx = ray->x1(); //x coordinate of ray starting point
-    qreal ry = ray->y1(); //y coordinate of ray starting point
-    qreal rdx = ray->dx(); //horizontal component of the ray's vector
-    qreal rdy = ray->dy(); //vertical component of the ray's vector
+    QLineF vector = ray->line();
+    qreal rx = vector.x1(); //x coordinate of ray starting point
+    qreal ry = vector.y1(); //y coordinate of ray starting point
+    qreal rdx = vector.dx(); //horizontal component of the ray's vector
+    qreal rdy = vector.dy(); //vertical component of the ray's vector
     //calculate on which side of a ray do the absorber's vertices lie
     qreal l = rdy * (m_left.x() - rx) - rdx * (m_left.y() - ry);
     qreal r = rdy * (m_right.x() - rx) - rdx * (m_right.y() - ry);
@@ -38,17 +44,17 @@ qreal Absorber::intersectionDistance(const Ray *ray) const
     return (mdx * ry - mdy * rx + mdy * mx - mdx * my) / (mdy * rdx - mdx * rdy);
 }
 
-void Absorber::reflectionVector(Ray *, QList<Ray *> *) const
+void Absorber::reflectionVector(Ray *, bool *) const
 {
     return; //absorber never reflects
 }
 
 QRectF Absorber::boundingRect() const
 {
-    return QRectF(0.0, 0.0, 0.0, 0.0);
+    return QRectF(0.0, 0.0, 0.0, 0.0); //item is never drawn
 }
 
-void Absorber::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void Absorber::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
 {
-    return;
+    return; //item is never drawn
 }

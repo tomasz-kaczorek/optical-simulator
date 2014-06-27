@@ -1,38 +1,55 @@
 #include "dockabletabwidget.h"
 #include <QTabWidget>
 
-DockableTabWidget::DockableTabWidget(const QString &title, QWidget *parent) :
+#include <QGridLayout>
+#include <QPushButton>
+
+DockableTabWidget::DockableTabWidget(QString const &title, QWidget *parent) :
     QDockWidget(title, parent)
 {
-    m_tabs = new QTabWidget();
-    setWidget(m_tabs);
+    m_widget = new TabWidget(this);
+    setWidget(m_widget);
 }
 
-void DockableTabWidget::addTab(QWidget *page, const QString &label)
+void DockableTabWidget::addTab(QWidget *page, QString const &label)
 {
-    connect(page, SIGNAL(newLabel(QWidget *, const QString &)), this, SLOT(newLabel(QWidget *, const QString &)));
-    m_tabs->addTab(page, label);
-    m_tabs->setCurrentWidget(page);
+    m_widget->m_tabs->addTab(page, label);
+    m_widget->m_tabs->setCurrentWidget(page);
+    //first tab was added
+    if(m_widget->m_tabs->count() == 1)
+    {
+        m_widget->m_applyButton->setEnabled(true);
+        m_widget->m_cancelButton->setEnabled(true);
+        m_widget->m_removeButton->setEnabled(true);
+    }
 }
 
-int DockableTabWidget::removeCurrentTab()
+void DockableTabWidget::newLabel(QString const &label)
 {
-    int index = m_tabs->currentIndex();
-    m_tabs->removeTab(index);
-    return index;
+    m_widget->m_tabs->setTabText(m_widget->m_tabs->currentIndex(), label);
 }
 
-QStringList DockableTabWidget::getNames()
+DockableTabWidget::TabWidget::TabWidget(QWidget *parent) :
+    QWidget(parent)
 {
-    QStringList names;
-    for(int i = 0; i < m_tabs->count(); ++i)
-        names.append(m_tabs->tabText(i));
-    return names;
+    m_layout = new QGridLayout(this);
+
+    m_tabs = new QTabWidget(this);
+
+    m_applyButton = new QPushButton("Apply", this);
+    m_applyButton->setEnabled(false);
+    m_applyButton->setAutoDefault(true);
+
+    m_cancelButton = new QPushButton("Cancel", this);
+    m_cancelButton->setEnabled(false);
+    m_cancelButton->setAutoDefault(true);
+
+    m_removeButton = new QPushButton("Remove", this);
+    m_removeButton->setEnabled(false);
+    m_removeButton->setAutoDefault(true);
+
+    m_layout->addWidget(m_tabs, 0, 0, 1, 3);
+    m_layout->addWidget(m_applyButton, 1, 0);
+    m_layout->addWidget(m_cancelButton, 1, 1);
+    m_layout->addWidget(m_removeButton, 1, 2);
 }
-
-void DockableTabWidget::newLabel(QWidget *w, const QString &label)
-{
-    m_tabs->setTabText(m_tabs->indexOf(w), label);
-}
-
-

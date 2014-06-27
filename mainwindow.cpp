@@ -1,16 +1,19 @@
 #include "mainwindow.h"
+
 #include "dockabletabwidget.h"
 #include "planemirror.h"
-#include "planemirrortab.h"
 #include "concavemirror.h"
-#include "concavemirrortab.h"
 #include "diffractiongrating.h"
-#include "diffractiongratingtab.h"
+#include "diffractiongratingform.h"
+#include "concavemirrorform.h"
 #include "lightsource.h"
-#include "lightsourcetab.h"
 #include "ray.h"
 #include "settings.h"
-#include "absorber.h"
+#include "opticalsystem.h"
+#include "opticaldevicetabwidget.h"
+#include "planemirrorform.h"
+#include "lightsourceform.h"
+
 #include <QIcon>
 #include <QAction>
 #include <QToolBar>
@@ -19,6 +22,10 @@
 #include <QGraphicsScene>
 #include <QSettings>
 #include <QCloseEvent>
+#include <QMenu>
+#include <QMenuBar>
+#include <QAction>
+#include <QDockWidget>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -26,19 +33,22 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     readSettings();
     buildToolbar();
-    m_scene = new QGraphicsScene(0, 0, 2000, 2000, this);
-    m_scene->setBackgroundBrush(QBrush(Qt::lightGray));
-    m_reflectors.append(new Absorber(Settings::minX, Settings::minY, Settings::minX, Settings::maxY));
-    m_reflectors.append(new Absorber(Settings::minX, Settings::maxY, Settings::maxX, Settings::maxY));
-    m_reflectors.append(new Absorber(Settings::maxX, Settings::maxY, Settings::maxX, Settings::minY));
-    m_reflectors.append(new Absorber(Settings::maxX, Settings::minY, Settings::minX, Settings::minY));
-    m_view = new QGraphicsView(m_scene, this);
-    m_view->ensureVisible(0, 0, 0, 0);
-    m_reflectorTabs = new DockableTabWidget(tr("Reflectors"), this);
-    m_lightSourceTabs = new DockableTabWidget(tr("Light Sources"), this);
-    addDockWidget(Qt::BottomDockWidgetArea, m_reflectorTabs);
-    addDockWidget(Qt::BottomDockWidgetArea, m_lightSourceTabs);
+
+    m_system = new OpticalSystem(0.0, 0.0, 2000.0, 2000.0, this);
+    m_view = new QGraphicsView(m_system, this);
+    m_view->ensureVisible(Settings::minX, Settings::minY, 0.0, 0.0);
+
+    m_reflectorDockWidget = new QDockWidget(tr("Reflectors"), this);
+    m_reflectorTabs = new OpticalDeviceTabWidget(m_reflectorDockWidget);
+    m_reflectorDockWidget->setWidget(m_reflectorTabs);
+
+    m_lightSourceDockWidget = new QDockWidget(tr("Light Sources"), this);
+    m_lightSourceTabs = new OpticalDeviceTabWidget(m_lightSourceDockWidget);
+    m_lightSourceDockWidget->setWidget(m_lightSourceTabs);
+
     setCentralWidget(m_view);
+    addDockWidget(Qt::BottomDockWidgetArea, m_reflectorDockWidget);
+    addDockWidget(Qt::BottomDockWidgetArea, m_lightSourceDockWidget);
     show();
 }
 
@@ -55,9 +65,6 @@ void MainWindow::buildToolbar()
     toolbar->addAction(QIcon(QPixmap("Icons/AddConcaveMirror.png")), "Add Concave Mirror", this, SLOT(addConcaveMirror()));
     toolbar->addAction(QIcon(QPixmap("Icons/AddDiffractionGrating.png")), "Add Diffraction Grating", this, SLOT(addDiffractionGrating()));
     toolbar->addAction(QIcon(QPixmap("Icons/AddLightSource.png")), "Add Light Source", this, SLOT(addLightSource()));
-    toolbar->addSeparator();
-    toolbar->addAction(QIcon(QPixmap("Icons/RemoveReflector.png")), "Remove Reflector", this, SLOT(removeReflector()));
-    toolbar->addAction(QIcon(QPixmap("Icons/RemoveLightSource.png")), "Remove Light Source", this, SLOT(removeLightSource()));
     toolbar->addSeparator();
     toolbar->addAction(QIcon(QPixmap("Icons/RemoveLightSource.png")), "Draw", this, SLOT(recalculate()));
 }
@@ -89,6 +96,7 @@ void MainWindow::writeSettings()
         settings.setValue("minQuantity", Settings::minQuantity);
         settings.setValue("maxQuantity", Settings::maxQuantity);
         settings.setValue("decimals", Settings::decimals);
+        settings.setValue("allowedRecursionDepth", Settings::allowedRecursionDepth);
         settings.setValue("itemPenWidth", Settings::itemPenWidth);
         settings.setValue("itemNormalLength", Settings::itemNormalLength);
         settings.setValue("rayPenWidth", Settings::rayPenWidth);
@@ -125,6 +133,7 @@ void MainWindow::readSettings()
         Settings::decimals = settings.value("decimals", 4).toDouble();
         Settings::epsilon = 1;
         for(int i = 0; i < 4; i++) Settings::epsilon /= 10;
+        Settings::allowedRecursionDepth = settings.value("allowedRecursionDepth", 20).toInt();
         Settings::itemPenWidth = settings.value("itemPenWidth", 0.0).toDouble();
         Settings::itemNormalLength = settings.value("itemNormalLength", 5.0).toDouble();
         Settings::rayPenWidth = settings.value("rayPenWidth", 0.0).toDouble();
@@ -132,91 +141,42 @@ void MainWindow::readSettings()
     settings.endGroup();
 }
 
-QStringList MainWindow::getNames()
-{
-    return m_reflectorTabs->getNames();
-}
-
-Reflector *MainWindow::getReflector(int index)
-{
-    return m_reflectors.at(index);
-}
-
-QList<Reflector *> const &MainWindow::getReflectors()
-{
-    return m_reflectors;
-}
-
 void MainWindow::addPlaneMirror()
 {
-    static unsigned int counter = 0;
     PlaneMirror *planeMirror = new PlaneMirror();
-    PlaneMirrorTab *planeMirrorTab = new PlaneMirrorTab(planeMirror, this);
-    m_scene->addItem(planeMirror);
-    m_reflectors.push_back(planeMirror);
-    m_reflectorTabs->addTab(planeMirrorTab, tr("Plane Mirror #")+QString::number(++counter));
-    connect(planeMirrorTab, SIGNAL(newLabel(QWidget*,QString)), m_reflectorTabs, SLOT(newLabel(QWidget*,QString)));
+    PlaneMirrorForm *planeMirrorForm = new PlaneMirrorForm(planeMirror, m_reflectorTabs);
+    m_system->addReflector(planeMirror);
+    m_reflectorTabs->addTab(planeMirrorForm);
 }
 
 void MainWindow::addConcaveMirror()
 {
-    static unsigned int counter = 0;
     ConcaveMirror *concaveMirror = new ConcaveMirror();
-    ConcaveMirrorTab *concaveMirrorTab = new ConcaveMirrorTab(concaveMirror, this);
-    m_scene->addItem(concaveMirror);
-    m_reflectors.push_back(concaveMirror);
-    m_reflectorTabs->addTab(concaveMirrorTab, tr("Concave Mirror #")+QString::number(++counter));
-    connect(concaveMirrorTab, SIGNAL(newLabel(QWidget*,QString)), m_reflectorTabs, SLOT(newLabel(QWidget*,QString)));
+    ConcaveMirrorForm *concaveMirrorForm = new ConcaveMirrorForm(concaveMirror, m_reflectorTabs);
+    m_system->addReflector(concaveMirror);
+    m_reflectorTabs->addTab(concaveMirrorForm);
 }
 
 void MainWindow::addDiffractionGrating()
 {
-    static unsigned int counter = 0;
     DiffractionGrating *diffractionGrating = new DiffractionGrating();
-    DiffractionGratingTab *diffractionGratingTab = new DiffractionGratingTab(diffractionGrating, this);
-    m_scene->addItem(diffractionGrating);
-    m_reflectors.push_back(diffractionGrating);
-    m_reflectorTabs->addTab(diffractionGratingTab, tr("Diffraction Grating #")+QString::number(++counter));
-    connect(diffractionGratingTab, SIGNAL(newLabel(QWidget*,QString)), m_reflectorTabs, SLOT(newLabel(QWidget*,QString)));
-}
-
-void MainWindow::removeReflector()
-{
-    int index = m_reflectorTabs->removeCurrentTab();
-    if(index >= 0)
-    {
-        Reflector *reflector = m_reflectors.takeAt(index);
-        m_scene->removeItem(reflector);
-        delete(reflector);
-    }
+    DiffractionGratingForm *diffractionGratingForm = new DiffractionGratingForm(diffractionGrating, m_reflectorTabs);
+    m_system->addReflector(diffractionGrating);
+    m_reflectorTabs->addTab(diffractionGratingForm);
 }
 
 void MainWindow::addLightSource()
 {
-    static unsigned int counter = 0;
-    LightSource *lightSource = new LightSource(&m_reflectors);
-    LightSourceTab *lightSourceTab = new LightSourceTab(lightSource, this);
-    m_scene->addItem(lightSource);
-    m_lightSources.push_back(lightSource);
-    m_lightSourceTabs->addTab(lightSourceTab, tr("Light Source #")+QString::number(++counter));
-    connect(lightSourceTab, SIGNAL(newLabel(QWidget*,QString)), m_lightSourceTabs, SLOT(newLabel(QWidget*,QString)));
-}
-
-void MainWindow::removeLightSource()
-{
-    int index = m_lightSourceTabs->removeCurrentTab();
-    if(index >= 0)
-    {
-        LightSource *lightSource = m_lightSources.takeAt(index);
-        m_scene->removeItem(lightSource);
-        delete(lightSource);
-    }
+    LightSource *lightSource = new LightSource();
+    LightSourceForm *lightSourceForm = new LightSourceForm(lightSource, m_lightSourceTabs);
+    m_system->addLightSource(lightSource);
+    m_lightSourceTabs->addTab(lightSourceForm);
 }
 
 void MainWindow::recalculate()
 {
     foreach(LightSource *lightSource, m_lightSources)
     {
-        lightSource->plotRays();
+        //lightSource->plotRays();
     }
 }

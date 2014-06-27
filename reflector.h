@@ -1,22 +1,23 @@
 #ifndef REFLECTOR_H
 #define REFLECTOR_H
 
+#include "opticaldevice.h"
+
 #include <QGraphicsItem>
-#include <QVariant>
-#include <QQueue>
 
 class Ray;
 
-class Reflector : public QGraphicsItem
+class Reflector : public OpticalDevice
 {
-public:
+protected: //not meant to be used independently
     Reflector(QGraphicsItem *parent = 0);
-    virtual ~Reflector();
-
+    ~Reflector();
+public:
     virtual QPointF leftEdge() const = 0;
     virtual QPointF rightEdge() const = 0;
+    virtual void geometryChanged() = 0;
     virtual qreal intersectionDistance(Ray const *ray) const = 0;
-    virtual void reflectionVector(Ray *ray, QList<Ray *> *rays) const = 0;
+    virtual void reflectionVector(Ray *ray, bool *orders) const = 0;
 };
 
 #endif // OPTICALDEVICE_H

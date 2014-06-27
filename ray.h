@@ -1,72 +1,53 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include <QGraphicsItem>
+#include "lightsource.h"
+
+#include <QGraphicsLineItem>
+
+class Reflector;
 
 //custom QGraphicsItem offers better control over paint function and faster access to line attributes than QGraphicsLineItem
-class Ray : public QGraphicsItem
+class Ray : public QGraphicsLineItem
 {
 public:
-    Ray(qreal x1, qreal y1, qreal x2, qreal y2, QColor color, Qt::PenStyle style);
-    Ray *addNext(qreal x, qreal y, int order = 0);
-    inline qreal x1() const;
-    inline qreal y1() const;
-    inline qreal x2() const;
-    inline qreal y2() const;
-    inline qreal dx() const;
-    inline qreal dy() const;
-    inline void setAngle(qreal angle);
+    Ray(LightSource *lightSource, qreal x1, qreal y1, qreal x2, qreal y2, unsigned int recursionDepth = 0, int order = 0, QGraphicsItem *parent = 0);
+    Ray(LightSource *lightSource, qreal x1, qreal y1, qreal angle, unsigned int recursionDepth = 0, int order = 0, QGraphicsItem *parent = 0);
+
     inline void adjust(qreal adjustment);
-protected:
-    QRectF boundingRect() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    inline qreal wavelength() const;
+    void setWavelength(qreal wavelength);
+    inline bool visibleOrder(int order) const;
+    void setVisibleOrder(int order, bool visible = true);
+
+    void plot();
+    void plot(Reflector *reflector);
+
+    void reflect(qreal x, qreal y, int order = 0);
+    void reflect(qreal angle, int order = 0);
 private:
-    QLineF m_line;
-    QColor m_color;
-    Qt::PenStyle m_penStyle;
+    unsigned int m_recursionDepth;
+    LightSource *m_lightSource;
+    Reflector *m_reflector;
     Ray *m_next[5];
+    static unsigned int counter;
 };
-
-qreal Ray::x1() const
-{
-    return m_line.x1();
-}
-
-qreal Ray::y1() const
-{
-    return m_line.y1();
-}
-
-qreal Ray::x2() const
-{
-    return m_line.x2();
-}
-
-qreal Ray::y2() const
-{
-    return m_line.y2();
-}
-
-qreal Ray::dx() const
-{
-    return m_line.x2() - m_line.x1();
-}
-
-qreal Ray::dy() const
-{
-    return m_line.y2() - m_line.y1();
-}
-
-void Ray::setAngle(qreal angle)
-{
-    prepareGeometryChange();
-    m_line.setAngle(angle);
-}
 
 void Ray::adjust(qreal adjustment)
 {
-    prepareGeometryChange();
-    m_line.setLength(m_line.length() * adjustment);
+    QLineF newLine = line();
+    newLine.setLength(newLine.length() * adjustment);
+    setLine(newLine);
+}
+
+qreal Ray::wavelength() const
+{
+    return m_lightSource->wavelength();
+}
+
+bool Ray::visibleOrder(int order) const
+{
+    return m_lightSource->visibleOrder(order);
 }
 
 #endif // RAY_H

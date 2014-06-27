@@ -15,10 +15,10 @@ public:
     void setFocalLength(qreal focalLength);
     QPointF leftEdge() const;
     QPointF rightEdge() const;
+    void geometryChanged();
     qreal intersectionDistance(Ray const *ray) const;
-    void reflectionVector(Ray *ray, QList<Ray *> *rays) const;
-protected:    
-    QVariant itemChange(GraphicsItemChange change, QVariant const &value);
+    void reflectionVector(Ray *ray, bool *orders) const;
+protected:
     QRectF boundingRect() const;
     QPainterPath shape() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

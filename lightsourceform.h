@@ -1,26 +1,29 @@
-#ifndef LIGHTSOURCETAB_H
-#define LIGHTSOURCETAB_H
+#ifndef LIGHTSOURCEFORM_H
+#define LIGHTSOURCEFORM_H
 
-#include <QWidget>
+#include "opticaldeviceform.h"
 
-class MainWindow;
 class LightSource;
+
+class QCheckBox;
+class QDoubleSpinBox;
 class QGridLayout;
+class QGroupBox;
 class QLabel;
 class QLineEdit;
-class QDoubleSpinBox;
-class QSpinBox;
-class QGroupBox;
-class QCheckBox;
 class QPushButton;
+class QSpinBox;
 
-class LightSourceTab : public QWidget
+class LightSourceForm : public OpticalDeviceForm
 {
-    Q_OBJECT
 public:
-    explicit LightSourceTab(LightSource *lightSource, MainWindow *mainWindow, QWidget *parent = 0);
+    LightSourceForm(LightSource *lightSource, QWidget *parent = 0);
+    ~LightSourceForm();
+    QString name();
+    void apply();
+    void cancel();
 private:
-    MainWindow *m_mainWindow;
+    void aim();
     LightSource *m_lightSource;
     QGridLayout *m_layout;
     QLabel *m_nameLabel;
@@ -46,19 +49,6 @@ private:
     QCheckBox *m_secondPositiveOrderCheckBox;
     QPushButton *m_aimPushButton;
     QCheckBox *m_activeCheckBox;
-signals:
-    void newLabel(QWidget *w, const QString &label);
-public slots:
-    void nameEditingFinished();
-    void xValueChanged(double value);
-    void yValueChanged(double value);
-    void beginAngleValueChanged(double value);
-    void endAngleValueChanged(double value);
-    void quantityValueChanged(int value);
-    void wavelengthValueChanged(double value);
-    void visibleOrdersStateChanged();
-    void activateStateChanged();
-    void aim();
 };
 
-#endif // LIGHTSOURCETAB_H
+#endif // LIGHTSOURCEFORM_H

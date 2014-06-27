@@ -10,8 +10,9 @@ public:
 protected:
     QPointF leftEdge() const;
     QPointF rightEdge() const;
+    void geometryChanged();
     qreal intersectionDistance(Ray const *ray) const;
-    void reflectionVector(Ray *ray, QList<Ray *> *rays) const;
+    void reflectionVector(Ray *ray, bool *orders) const;
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 private:

@@ -23,6 +23,7 @@ namespace Settings {
     qreal screenHeight; //drawing area height
     int decimals; //number of decimals
     qreal epsilon; //maximum difference of two qreal values, that are considered equal
+    unsigned int allowedRecursionDepth;
     qreal itemPenWidth;
     qreal itemNormalLength;
     qreal rayPenWidth;

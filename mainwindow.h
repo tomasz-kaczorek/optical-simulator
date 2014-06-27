@@ -3,11 +3,12 @@
 
 #include <QMainWindow>
 
-class QGraphicsScene;
+class OpticalDeviceTabWidget;
 class QGraphicsView;
 class DockableTabWidget;
 class Reflector;
 class LightSource;
+class OpticalSystem;
 
 class MainWindow : public QMainWindow
 {
@@ -15,19 +16,18 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    QStringList getNames();
-    Reflector *getReflector(int index);
-    QList<Reflector *> const &getReflectors();
 protected:
     void closeEvent(QCloseEvent *event);
 private:
     void buildToolbar();
     void writeSettings();
     void readSettings();
-    QGraphicsScene *m_scene;
+    OpticalSystem *m_system;
     QGraphicsView *m_view;
-    DockableTabWidget *m_reflectorTabs;
-    DockableTabWidget *m_lightSourceTabs;
+    QDockWidget *m_reflectorDockWidget;
+    QDockWidget *m_lightSourceDockWidget;
+    OpticalDeviceTabWidget *m_reflectorTabs;
+    OpticalDeviceTabWidget *m_lightSourceTabs;
     QList<Reflector *> m_reflectors;
     QList<LightSource *> m_lightSources;
 public slots:
@@ -35,8 +35,6 @@ public slots:
     void addConcaveMirror();
     void addDiffractionGrating();
     void addLightSource();
-    void removeReflector();
-    void removeLightSource();
     void recalculate();
 };
 

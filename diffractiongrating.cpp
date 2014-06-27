@@ -1,7 +1,10 @@
 #include "diffractiongrating.h"
-#include <QPainter>
+
+#include "label.h"
 #include "ray.h"
 #include "settings.h"
+
+#include <QPainter>
 
 DiffractionGrating::DiffractionGrating(QGraphicsItem *parent) :
     Reflector(parent),
@@ -23,10 +26,9 @@ qreal DiffractionGrating::radius()  const
 
 void DiffractionGrating::setRadius(qreal radius)
 {
+    if(m_radius == radius) return;
     prepareGeometryChange();
     m_radius = radius;
-    m_left = leftEdge();
-    m_right = rightEdge();
 }
 
 qreal DiffractionGrating::blazingAngle() const
@@ -59,12 +61,20 @@ QPointF DiffractionGrating::rightEdge() const
     return mapToScene(QPointF(0.0, m_radius));
 }
 
+void DiffractionGrating::geometryChanged()
+{
+    m_left = leftEdge();
+    m_right = rightEdge();
+    m_label->geometryChanged();
+}
+
 qreal DiffractionGrating::intersectionDistance(Ray const *ray) const
 {
-    qreal rx = ray->x1(); //x coordinate of ray starting point
-    qreal ry = ray->y1(); //y coordinate of ray starting point
-    qreal rdx = ray->dx(); //horizontal component of the ray's vector
-    qreal rdy = ray->dy(); //vertical component of the ray's vector
+    QLineF vector = ray->line();
+    qreal rx = vector.x1(); //x coordinate of ray starting point
+    qreal ry = vector.y1(); //y coordinate of ray starting point
+    qreal rdx = vector.dx(); //horizontal component of the ray's vector
+    qreal rdy = vector.dy(); //vertical component of the ray's vector
     //calculate on which side of a ray do the diffraction grating's edges lie
     qreal l = rdy * (m_left.x() - rx) - rdx * (m_left.y() - ry);
     qreal r = rdy * (m_right.x() - rx) - rdx * (m_right.y() - ry);
@@ -78,19 +88,9 @@ qreal DiffractionGrating::intersectionDistance(Ray const *ray) const
     return (gdx * ry - gdy * rx + gdy * gx - gdx * gy) / (gdy * rdx - gdx * rdy);
 }
 
-void DiffractionGrating::reflectionVector(Ray *ray, QList<Ray *> *rays) const
+void DiffractionGrating::reflectionVector(Ray *ray, bool *orders) const
 {
 
-}
-
-QVariant DiffractionGrating::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
-{
-    if(change == ItemPositionHasChanged || change == ItemRotationHasChanged)
-    {
-        m_left = leftEdge();
-        m_right = rightEdge();
-    }
-    return value;
 }
 
 QRectF DiffractionGrating::boundingRect() const

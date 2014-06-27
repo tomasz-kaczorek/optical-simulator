@@ -1,8 +1,11 @@
-#include <QPainter>
-#include <qmath.h>
 #include "concavemirror.h"
+
+#include "label.h"
 #include "ray.h"
 #include "settings.h"
+
+#include <qmath.h>
+#include <QPainter>
 
 ConcaveMirror::ConcaveMirror(qreal x, qreal y, qreal angle, qreal radius, qreal focalLength, QGraphicsItem *parent) :
     Reflector(parent),
@@ -33,13 +36,9 @@ qreal ConcaveMirror::radius() const
 
 void ConcaveMirror::setRadius(qreal radius)
 {
+    if(m_radius == radius) return;
     prepareGeometryChange();
     m_radius = radius;
-    if(m_focalLength > 0.0) m_angularRadius = qAsin(m_radius / 2 / m_focalLength);
-    else m_angularRadius = M_PI;
-    m_circleCenter = circleCenter();
-    m_left = leftEdge();
-    m_right = rightEdge();
 }
 
 qreal ConcaveMirror::focalLength() const
@@ -49,13 +48,9 @@ qreal ConcaveMirror::focalLength() const
 
 void ConcaveMirror::setFocalLength(qreal focalLength)
 {
+    if(m_focalLength == focalLength) return;
     prepareGeometryChange();
     m_focalLength = focalLength;
-    if(m_focalLength > 0.0) m_angularRadius = qAsin(m_radius / 2 / m_focalLength);
-    else m_angularRadius = M_PI;
-    m_circleCenter = circleCenter();
-    m_left = leftEdge();
-    m_right = rightEdge();
 }
 
 QPointF ConcaveMirror::leftEdge() const
@@ -68,12 +63,23 @@ QPointF ConcaveMirror::rightEdge() const
     return mapToScene(QPointF(2 * m_focalLength * (1 - qCos(m_angularRadius)), m_radius));
 }
 
+void ConcaveMirror::geometryChanged()
+{
+    if(m_focalLength > 0.0) m_angularRadius = qAsin(m_radius / 2 / m_focalLength);
+    else m_angularRadius = M_PI;
+    m_circleCenter = circleCenter();
+    m_left = leftEdge();
+    m_right = rightEdge();
+    m_label->geometryChanged();
+}
+
 qreal ConcaveMirror::intersectionDistance(Ray const *ray) const
 {
-    qreal rx = ray->x1(); //x coordinate of ray starting point
-    qreal ry = ray->y1(); //y coordinate of ray starting point
-    qreal rdx = ray->dx(); //horizontal component of the ray's vector
-    qreal rdy = ray->dy(); //vertical component of the ray's vector
+    QLineF vector = ray->line();
+    qreal rx = vector.x1(); //x coordinate of ray starting point
+    qreal ry = vector.y1(); //y coordinate of ray starting point
+    qreal rdx = vector.dx(); //horizontal component of the ray's vector
+    qreal rdy = vector.dy(); //vertical component of the ray's vector
     //(cx, cy) is a vector from circle center to the ray start
     qreal cx = rx - m_circleCenter.x();
     qreal cy = ry - m_circleCenter.y();
@@ -101,39 +107,26 @@ qreal ConcaveMirror::intersectionDistance(Ray const *ray) const
     return -1.0;
 }
 
-void ConcaveMirror::reflectionVector(Ray *ray, QList<Ray *> *rays) const
+void ConcaveMirror::reflectionVector(Ray *ray, bool *orders) const
 {
-    qreal rx = ray->x1(); //x coordinate of ray starting point
-    qreal ry = ray->y1(); //y coordinate of ray starting point
-    qreal mx = m_right.x(); //x coordinate of mirror's edge
-    qreal my = m_right.y(); //y coordinate of mirror's edge
-    qreal mdx = m_left.x() - mx; //horizontal component of the line between mirror's edges
-    qreal mdy = m_left.y() - my; //vertical component of the line between mirror's edges
+    if(!orders[0]) return;
+    QLineF vector = ray->line();
+    qreal rx = vector.x1(); //x coordinate of ray starting point
+    qreal ry = vector.y1(); //y coordinate of ray starting point
+    qreal mx = vector.x2(); //x coordinate of ray-mirror intersection point
+    qreal my = vector.y2(); //y coordinate of ray-mirror intersection point
+    qreal mdx = m_circleCenter.x() - mx; //horizontal component of the vector perpedicular to mirror's surface at intersection point
+    qreal mdy = m_circleCenter.y() - my; //vertical component of the vector perpedicular to mirror's surface at intersection point
     //calculate on which side of a mirror does the ray begin
     //if it begins on the back side, return as there will be no reflection
-    if(Settings::greaterThanOrEqualZero(mdy * (rx - mx) - mdx * (ry - my))) return;
-    mx = ray->x2(); //x coordinate of ray-mirror intersection point
-    my = ray->y2(); //y coordinate of ray-mirror intersection point
-    //find a vector (mdx, mdy) perpedicular to mirror surface at intersection point
-    mdx = m_circleCenter.x() - mx;
-    mdy = m_circleCenter.y() - my;
+    //vector (mdy, -mdx) is perpedicular to (mdx, mdy) and parallel to mirror's surface at intersection point
+    if(Settings::greaterThanOrEqualZero(-mdx * (rx - mx) - mdy * (ry - my))) return;
     //plug: (x = mx + d * mdx) and (y = my + d * mdy) into distance equation between (rx, ry) and (x, y): sqrt((x - rx) ^ 2 + (y - ry) ^ 2)
     //abandon the root (as it is irrelevant) and minimize result to find projection of (rx, ry) on line perpedicular to mirror's surface
     //parabola's tip is located at d = -b / 2 * a
     qreal d = (mdx * (rx - mx) + mdy * (ry - my)) / (mdx * mdx + mdy * mdy);
     //reflection ray's heading is located twice as far from (rx, ry) as (x, y)
-    rays->append(ray->addNext(2 * (mx + d * mdx) - rx, 2 * (my + d * mdy) - ry));
-}
-
-QVariant ConcaveMirror::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
-{
-    if(change == ItemPositionHasChanged || change == ItemRotationHasChanged)
-    {
-        m_circleCenter = circleCenter();
-        m_left = leftEdge();
-        m_right = rightEdge();
-    }
-    return value;
+    ray->reflect(2 * (mx + d * mdx) - rx, 2 * (my + d * mdy) - ry);
 }
 
 QRectF ConcaveMirror::boundingRect() const

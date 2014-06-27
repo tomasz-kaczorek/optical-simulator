@@ -26,19 +26,15 @@ namespace Settings {
     extern qreal screenHeight; //drawing area height
     extern int decimals; //number of decimals
     extern qreal epsilon; //maximum difference of two qreal values, that are considered equal
+    extern unsigned int allowedRecursionDepth; //maximum recursion depth, it determines maximum number of ray's segments
     extern qreal itemPenWidth; //width of the pen used for drawing mirrors
     extern qreal itemNormalLength; //length of the segment denoting the reflective side of mirrors
     extern qreal rayPenWidth;  //width of the pen used for drawing rays
     extern qreal outlineWidth; //width of the interactive area around mirros
 
-    inline bool greaterThanZero(qreal x)
+    inline bool equalZero(qreal x)
     {
-        return (x - epsilon) > 0.0;
-    }
-
-    inline bool greaterThanOrEqualZero(qreal x)
-    {
-        return fabs(x) < epsilon || (x - epsilon) > 0.0;
+        return fabs(x) < epsilon;
     }
 
     inline bool lessThanZero(qreal x)
@@ -46,10 +42,21 @@ namespace Settings {
         return (x + epsilon) < 0.0;
     }
 
+    inline bool greaterThanZero(qreal x)
+    {
+        return (x - epsilon) > 0.0;
+    }
+
     inline bool lessThanOrEqualZero(qreal x)
     {
-        return fabs(x) < epsilon || (x + epsilon) < 0.0;
+        return equalZero(x) || lessThanZero(x);
     }
+
+    inline bool greaterThanOrEqualZero(qreal x)
+    {
+        return equalZero(x) || greaterThanZero(x);
+    }
+
 }
 
 #endif // SETTINGS_H

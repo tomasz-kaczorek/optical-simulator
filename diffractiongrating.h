@@ -16,10 +16,10 @@ public:
     void setDensity(qreal density);
     QPointF leftEdge() const;
     QPointF rightEdge() const;
+    void geometryChanged();
     qreal intersectionDistance(Ray const *ray) const;
-    void reflectionVector(Ray *ray, QList<Ray *> *rays) const;
+    void reflectionVector(Ray *ray, bool *orders) const;
 protected:
-    QVariant itemChange (GraphicsItemChange change, QVariant const &value);
     QRectF boundingRect() const;
     QPainterPath shape() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

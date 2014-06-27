@@ -15,34 +15,44 @@ QMAKE_CXXFLAGS += -std=c++11
 SOURCES += main.cpp\
     mainwindow.cpp \
     planemirror.cpp \
-    planemirrortab.cpp \
     concavemirror.cpp \
-    concavemirrortab.cpp \
     lightsource.cpp \
     dockabletabwidget.cpp \
     reflector.cpp \
     diffractiongrating.cpp \
-    diffractiongratingtab.cpp \
-    lightsourcetab.cpp \
     reflectortab.cpp \
     aimdialog.cpp \
     ray.cpp \
     settings.cpp \
-    absorber.cpp
+    absorber.cpp \
+    opticalsystem.cpp \
+    label.cpp \
+    opticaldeviceform.cpp \
+    planemirrorform.cpp \
+    opticaldevicetabwidget.cpp \
+    concavemirrorform.cpp \
+    diffractiongratingform.cpp \
+    lightsourceform.cpp \
+    opticaldevice.cpp
 
 HEADERS  += mainwindow.h \
     planemirror.h \
-    planemirrortab.h \
     concavemirror.h \
-    concavemirrortab.h \
     lightsource.h \
     dockabletabwidget.h \
     reflector.h \
     diffractiongrating.h \
-    diffractiongratingtab.h \
-    lightsourcetab.h \
     reflectortab.h \
     aimdialog.h \
     settings.h \
     ray.h \
-    absorber.h
+    absorber.h \
+    opticalsystem.h \
+    label.h \
+    opticaldeviceform.h \
+    planemirrorform.h \
+    opticaldevicetabwidget.h \
+    concavemirrorform.h \
+    diffractiongratingform.h \
+    lightsourceform.h \
+    opticaldevice.h
