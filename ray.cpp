@@ -44,7 +44,7 @@ void Ray::setVisibleOrder(int order, bool visible)
 
 }
 
-void Ray::reflect(qreal x, qreal y, int order)
+void Ray::append(qreal x, qreal y, int order)
 {
     if(m_recursionDepth >= Settings::allowedRecursionDepth || order < -2 || order > 2) return;
     QLineF vector = line();
@@ -52,7 +52,7 @@ void Ray::reflect(qreal x, qreal y, int order)
     m_next[order + 2]->plot();
 }
 
-void Ray::reflect(qreal angle, int order)
+void Ray::append(qreal angle, int order)
 {
     if(m_recursionDepth >= Settings::allowedRecursionDepth || order < -2 || order > 2) return;
     QLineF vector = line();
@@ -67,7 +67,7 @@ void Ray::plot()
     qreal bestAdjustment = DBL_MAX;
     foreach(Reflector *reflector, m_lightSource->system()->reflectors())
     {
-        adjustment = reflector->intersectionDistance(this);
+        adjustment = reflector->multiplier(this);
         if(Settings::greaterThanZero(adjustment) && adjustment < bestAdjustment)
         {
             bestAdjustment = adjustment;
@@ -75,7 +75,7 @@ void Ray::plot()
         }
     }
     adjust(bestAdjustment);
-    m_reflector->reflectionVector(this, m_lightSource->visibleOrders());
+    m_reflector->reflect(this, m_lightSource->visibleOrders());
 }
 
 void Ray::plot(Reflector *reflector)

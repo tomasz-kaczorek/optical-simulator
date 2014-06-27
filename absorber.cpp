@@ -24,7 +24,7 @@ void Absorber::geometryChanged()
     return; //item should not be changed
 }
 
-qreal Absorber::intersectionDistance(const Ray *ray) const
+qreal Absorber::multiplier(const Ray *ray) const
 {
     QLineF vector = ray->line();
     qreal rx = vector.x1(); //x coordinate of ray starting point
@@ -44,7 +44,7 @@ qreal Absorber::intersectionDistance(const Ray *ray) const
     return (mdx * ry - mdy * rx + mdy * mx - mdx * my) / (mdy * rdx - mdx * rdy);
 }
 
-void Absorber::reflectionVector(Ray *, bool *) const
+void Absorber::reflect(Ray *, bool *) const
 {
     return; //absorber never reflects
 }

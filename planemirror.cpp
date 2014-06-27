@@ -46,7 +46,7 @@ void PlaneMirror::geometryChanged()
     m_label->geometryChanged();
 }
 
-qreal PlaneMirror::intersectionDistance(Ray const *ray) const
+qreal PlaneMirror::multiplier(Ray const *ray) const
 {
     QLineF vector = ray->line();
     qreal rx = vector.x1(); //x coordinate of ray starting point
@@ -66,7 +66,7 @@ qreal PlaneMirror::intersectionDistance(Ray const *ray) const
     return (mdx * ry - mdy * rx + mdy * mx - mdx * my) / (mdy * rdx - mdx * rdy);
 }
 
-void PlaneMirror::reflectionVector(Ray *ray, bool *orders) const
+void PlaneMirror::reflect(Ray *ray, bool *orders) const
 {
     if(!orders[0]) return;
     QLineF vector = ray->line();
@@ -87,7 +87,7 @@ void PlaneMirror::reflectionVector(Ray *ray, bool *orders) const
     //parabola's tip is located at d = -b / 2 * a
     qreal d = (mdx * (rx - mx) + mdy * (ry - my)) / (mdx * mdx + mdy * mdy);
     //reflection ray's heading is located twice as far from (rx, ry) as (x, y)
-    ray->reflect(2 * (mx + d * mdx) - rx, 2 * (my + d * mdy) - ry);
+    ray->append(2 * (mx + d * mdx) - rx, 2 * (my + d * mdy) - ry);
 }
 
 QRectF PlaneMirror::boundingRect() const

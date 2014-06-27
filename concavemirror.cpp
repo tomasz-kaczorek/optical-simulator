@@ -73,7 +73,7 @@ void ConcaveMirror::geometryChanged()
     m_label->geometryChanged();
 }
 
-qreal ConcaveMirror::intersectionDistance(Ray const *ray) const
+qreal ConcaveMirror::multiplier(Ray const *ray) const
 {
     QLineF vector = ray->line();
     qreal rx = vector.x1(); //x coordinate of ray starting point
@@ -107,7 +107,7 @@ qreal ConcaveMirror::intersectionDistance(Ray const *ray) const
     return -1.0;
 }
 
-void ConcaveMirror::reflectionVector(Ray *ray, bool *orders) const
+void ConcaveMirror::reflect(Ray *ray, bool *orders) const
 {
     if(!orders[0]) return;
     QLineF vector = ray->line();
@@ -126,7 +126,7 @@ void ConcaveMirror::reflectionVector(Ray *ray, bool *orders) const
     //parabola's tip is located at d = -b / 2 * a
     qreal d = (mdx * (rx - mx) + mdy * (ry - my)) / (mdx * mdx + mdy * mdy);
     //reflection ray's heading is located twice as far from (rx, ry) as (x, y)
-    ray->reflect(2 * (mx + d * mdx) - rx, 2 * (my + d * mdy) - ry);
+    ray->append(2 * (mx + d * mdx) - rx, 2 * (my + d * mdy) - ry);
 }
 
 QRectF ConcaveMirror::boundingRect() const

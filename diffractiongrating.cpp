@@ -68,7 +68,7 @@ void DiffractionGrating::geometryChanged()
     m_label->geometryChanged();
 }
 
-qreal DiffractionGrating::intersectionDistance(Ray const *ray) const
+qreal DiffractionGrating::multiplier(Ray const *ray) const
 {
     QLineF vector = ray->line();
     qreal rx = vector.x1(); //x coordinate of ray starting point
@@ -88,7 +88,7 @@ qreal DiffractionGrating::intersectionDistance(Ray const *ray) const
     return (gdx * ry - gdy * rx + gdy * gx - gdx * gy) / (gdy * rdx - gdx * rdy);
 }
 
-void DiffractionGrating::reflectionVector(Ray *ray, bool *orders) const
+void DiffractionGrating::reflect(Ray *ray, bool *orders) const
 {
 
 }

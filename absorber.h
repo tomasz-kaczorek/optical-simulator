@@ -11,8 +11,8 @@ protected:
     QPointF leftEdge() const;
     QPointF rightEdge() const;
     void geometryChanged();
-    qreal intersectionDistance(Ray const *ray) const;
-    void reflectionVector(Ray *ray, bool *orders) const;
+    qreal multiplier(Ray const *ray) const;
+    void reflect(Ray *ray, bool *orders) const;
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 private:

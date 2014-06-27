@@ -23,8 +23,8 @@ public:
     void plot();
     void plot(Reflector *reflector);
 
-    void reflect(qreal x, qreal y, int order = 0);
-    void reflect(qreal angle, int order = 0);
+    void append(qreal x, qreal y, int order = 0);
+    void append(qreal angle, int order = 0);
 private:
     unsigned int m_recursionDepth;
     LightSource *m_lightSource;
