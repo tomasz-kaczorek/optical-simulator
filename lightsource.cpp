@@ -21,19 +21,10 @@ void LightSource::addRay(qreal angle)
     scene()->addItem(ray);
 }
 
-void LightSource::clearRays()
-{
-    for(int i = m_rays.size(); i > 0; --i)
-    {
-        Ray *ray = m_rays.takeFirst();
-        scene()->removeItem(ray);
-        delete ray;
-    }
-}
-
 void LightSource::geometryChanged()
 {
-    clearRays();
+    qDeleteAll(m_rays);
+    m_rays.clear();
     if(m_quantity == 1) addRay(m_beginAngle);
     else
     {
@@ -59,38 +50,37 @@ void LightSource::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWi
 QColor LightSource::wavelengthColor(qreal wavelength, qreal intensity)
 {
     qreal R, G, B;
-    intensity *= 255.0;
 
     if (wavelength <= 780.0 && wavelength >= 645.0){
-        R = wavelength > 700.0 ? intensity * (0.3 + 0.7 * (780.0 - wavelength) / 80.0) : intensity;
+        R = wavelength > 700.0 ? 255.0 * (0.3 + 0.7 * (780.0 - wavelength) / 80.0) : 255.0;
         G = B = 0.0;
     }
     else if (wavelength >= 580.0){
-        R = intensity;
-        G = intensity * (645.0 - wavelength) / 65.0;
+        R = 255.0;
+        G = 255.0 * (645.0 - wavelength) / 65.0;
         B = 0.0;
     }
     else if (wavelength >= 510.0){
-        R = intensity * (wavelength - 510.0) / 70.0;
-        G = intensity;
+        R = 255.0 * (wavelength - 510.0) / 70.0;
+        G = 255.0;
         B = 0.0;
     }
     else if (wavelength >= 490.0){
         R = 0.0;
-        G = intensity;
-        B = intensity * (510.0 - wavelength) / 20.0;
+        G = 255.0;
+        B = 255.0 * (510.0 - wavelength) / 20.0;
     }
     else if (wavelength >= 440.0){
         R = 0.0;
-        G = intensity * (wavelength - 440.0) / 50.0;
-        B = intensity;
+        G = 255.0 * (wavelength - 440.0) / 50.0;
+        B = 255.0;
     }
     else if (wavelength >= 380.0){
-        R = B = wavelength < 420.0 ? intensity * (0.3 + 0.7 * (wavelength - 350.0) / 70.0) : intensity;
+        R = B = wavelength < 420.0 ? 255.0 * (0.3 + 0.7 * (wavelength - 350.0) / 70.0) : 255.0;
         R *= (440.0 - wavelength) / 90.0;
         G = 0.0;
     }
     else R = G = B = 0.0;
 
-    return QColor(R, G, B);
+    return QColor(R, G, B, intensity * 255.0);
 }

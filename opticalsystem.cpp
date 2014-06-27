@@ -8,10 +8,10 @@ OpticalSystem::OpticalSystem(qreal x, qreal y, qreal width, qreal height, QObjec
     QGraphicsScene(x, y, width, height, parent)
 {
     setBackgroundBrush(QBrush(Qt::lightGray));
-    m_reflectors.append(new Absorber(Settings::minX, Settings::minY, Settings::minX, Settings::maxY));
-    m_reflectors.append(new Absorber(Settings::minX, Settings::maxY, Settings::maxX, Settings::maxY));
-    m_reflectors.append(new Absorber(Settings::maxX, Settings::maxY, Settings::maxX, Settings::minY));
-    m_reflectors.append(new Absorber(Settings::maxX, Settings::minY, Settings::minX, Settings::minY));
+    m_reflectors.append(new Absorber(Settings::minX - 1.0, Settings::minY - 1.0, Settings::minX - 1.0, Settings::maxY - 1.0));
+    m_reflectors.append(new Absorber(Settings::minX - 1.0, Settings::maxY + 1.0, Settings::maxX + 1.0, Settings::maxY + 1.0));
+    m_reflectors.append(new Absorber(Settings::maxX + 1.0, Settings::maxY + 1.0, Settings::maxX + 1.0, Settings::minY - 1.0));
+    m_reflectors.append(new Absorber(Settings::maxX + 1.0, Settings::minY - 1.0, Settings::minX - 1.0, Settings::minY - 1.0));
 }
 
 void OpticalSystem::addReflector(Reflector *reflector)

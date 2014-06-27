@@ -29,7 +29,6 @@ public:
     inline void setActive(bool active = true);
     inline QColor color();
     void addRay(qreal angle);
-    void clearRays();
     void geometryChanged();
 protected:
     QRectF boundingRect() const;
@@ -84,7 +83,7 @@ qreal LightSource::wavelength()
 void LightSource::setWavelength(qreal wavelength)
 {
     m_wavelength = wavelength;
-    m_color = wavelengthColor(wavelength, 0.75);
+    m_color = wavelengthColor(wavelength, 0.5);
 }
 
 bool *LightSource::visibleOrders()
