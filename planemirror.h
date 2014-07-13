@@ -6,23 +6,21 @@
 class PlaneMirror : public Reflector
 {
 public:   
-    PlaneMirror(QGraphicsItem *parent = 0);
+    PlaneMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
     ~PlaneMirror();
+
     qreal radius() const;
-    void setRadius(qreal radius);
+    void setGeometry(qreal x, qreal y, qreal angle, qreal radius);
+
     QPointF leftEdge() const;
     QPointF rightEdge() const;
-    void geometryChanged();
-    qreal multiplier(Ray const *ray) const;
-    void reflect(Ray *ray, bool *orders) const;
-protected:
-    QRectF boundingRect() const;
-    QPainterPath shape() const;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+    qreal scalar(Ray const * ray) const;
+    void reflect(Ray * ray) const;
 private:
     qreal m_radius;
-    QPointF m_left;
-    QPointF m_right;
+    QPointF m_leftEdge;
+    QPointF m_rightEdge;
 };
 
 #endif // PLANEMIRROR_H

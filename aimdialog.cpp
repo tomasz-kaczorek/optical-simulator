@@ -5,7 +5,6 @@
 #include <QRadioButton>
 #include <QPlastiqueStyle>
 #include <QPushButton>
-#include "dockabletabwidget.h"
 
 AimDialog::AimDialog(QStringList names, QWidget *parent) :
     QDialog(parent)

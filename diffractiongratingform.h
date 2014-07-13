@@ -4,37 +4,34 @@
 #include "opticaldeviceform.h"
 
 class DiffractionGrating;
+class OpticalDeviceTabWidget;
 
 class QDoubleSpinBox;
-class QGridLayout;
-class QLabel;
 class QLineEdit;
+class QPushButton;
 
 class DiffractionGratingForm : public OpticalDeviceForm
 {
 public:
-    explicit DiffractionGratingForm(DiffractionGrating *diffractionGrating, QWidget *parent = 0);
+    explicit DiffractionGratingForm(DiffractionGrating * diffractionGrating, OpticalDeviceTabWidget * parent = 0);
     ~DiffractionGratingForm();
+
     QString name();
+private:
     void apply();
     void cancel();
-private:
-    DiffractionGrating *m_diffractionGrating;
-    QGridLayout *m_layout;
-    QLabel *m_nameLabel;
-    QLineEdit *m_nameLineEdit;
-    QLabel *m_xLabel;
-    QDoubleSpinBox *m_xSpinBox;
-    QLabel *m_yLabel;
-    QDoubleSpinBox *m_ySpinBox;
-    QLabel *m_angleLabel;
-    QDoubleSpinBox *m_angleSpinBox;
-    QLabel *m_radiusLabel;
-    QDoubleSpinBox *m_radiusSpinBox;
-    QLabel *m_densityLabel;
-    QDoubleSpinBox *m_densitySpinBox;
-    QLabel *m_blazingAngleLabel;
-    QDoubleSpinBox *m_blazingAngleSpinBox;
+    void changed();
+
+    DiffractionGrating * m_diffractionGrating;
+    QLineEdit * m_nameLineEdit;
+    QDoubleSpinBox * m_xSpinBox;
+    QDoubleSpinBox * m_ySpinBox;
+    QDoubleSpinBox * m_angleSpinBox;
+    QDoubleSpinBox * m_radiusSpinBox;
+    QDoubleSpinBox * m_blazeAngleSpinBox;
+    QDoubleSpinBox * m_densitySpinBox;
+    QPushButton * m_applyButton;
+    QPushButton * m_cancelButton;
 };
 
 #endif // DIFFRACTIONGRATINGFORM_H

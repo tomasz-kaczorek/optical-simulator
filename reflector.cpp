@@ -1,14 +1,16 @@
 #include "reflector.h"
 
-#include "label.h"
-#include "settings.h"
-
-Reflector::Reflector(QGraphicsItem *parent) :
-    OpticalDevice(parent)
+Reflector::Reflector(OpticalSystem * opticalSystem, QGraphicsItem * parent) :
+    OpticalDevice(opticalSystem, parent)
 {
 }
 
-Reflector::~Reflector()
+void Reflector::addRay(Ray * ray)
 {
+    m_rays.append(ray);
 }
 
+void Reflector::removeRay(Ray * ray)
+{
+    m_rays.removeOne(ray);
+}

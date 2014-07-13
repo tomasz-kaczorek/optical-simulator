@@ -4,35 +4,33 @@
 #include "opticaldeviceform.h"
 
 class ConcaveMirror;
+class OpticalDeviceTabWidget;
 
 class QDoubleSpinBox;
-class QGridLayout;
-class QLabel;
 class QLineEdit;
+class QPushButton;
 
 class ConcaveMirrorForm : public OpticalDeviceForm
 {
 public:
-    explicit ConcaveMirrorForm(ConcaveMirror *concaveMirror, QWidget *parent = 0);
+    explicit ConcaveMirrorForm(ConcaveMirror *ConcaveMirror, OpticalDeviceTabWidget *parent = 0);
     ~ConcaveMirrorForm();
+
     QString name();
+private:
     void apply();
     void cancel();
-private:
-    ConcaveMirror *m_concaveMirror;
-    QGridLayout *m_layout;
-    QLabel *m_nameLabel;
-    QLineEdit *m_nameLineEdit;
-    QLabel *m_xLabel;
-    QDoubleSpinBox *m_xSpinBox;
-    QLabel *m_yLabel;
-    QDoubleSpinBox *m_ySpinBox;
-    QLabel *m_angleLabel;
-    QDoubleSpinBox *m_angleSpinBox;
-    QLabel *m_radiusLabel;
-    QDoubleSpinBox *m_radiusSpinBox;
-    QLabel *m_focalLengthLabel;
-    QDoubleSpinBox *m_focalLengthSpinBox;
+    void changed();
+
+    ConcaveMirror * m_concaveMirror;
+    QLineEdit * m_nameLineEdit;
+    QDoubleSpinBox * m_xSpinBox;
+    QDoubleSpinBox * m_ySpinBox;
+    QDoubleSpinBox * m_angleSpinBox;
+    QDoubleSpinBox * m_radiusSpinBox;
+    QDoubleSpinBox * m_focalLengthSpinBox;
+    QPushButton * m_applyButton;
+    QPushButton * m_cancelButton;
 };
 
 #endif // CONCAVEMIRRORFORM_H

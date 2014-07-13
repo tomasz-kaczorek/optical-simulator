@@ -7,31 +7,43 @@
 
 class Reflector;
 
-//custom QGraphicsItem offers better control over paint function and faster access to line attributes than QGraphicsLineItem
 class Ray : public QGraphicsLineItem
 {
 public:
-    Ray(LightSource *lightSource, qreal x1, qreal y1, qreal x2, qreal y2, unsigned int recursionDepth = 0, int order = 0, QGraphicsItem *parent = 0);
-    Ray(LightSource *lightSource, qreal x1, qreal y1, qreal angle, unsigned int recursionDepth = 0, int order = 0, QGraphicsItem *parent = 0);
+    Ray(LightSource * lightSource, qreal x1, qreal y1, qreal x2, qreal y2, unsigned int recursionDepth = 0, Qt::PenStyle style = Qt::SolidLine, QGraphicsItem * parent = 0);
+    Ray(LightSource * lightSource, qreal x1, qreal y1, qreal angle, unsigned int recursionDepth = 0, Qt::PenStyle style = Qt::SolidLine, QGraphicsItem * parent = 0);
+    ~Ray();
 
-    inline void adjust(qreal adjustment);
-    inline qreal wavelength() const;
-    void setWavelength(qreal wavelength);
-    inline bool visibleOrder(int order) const;
-    void setVisibleOrder(int order, bool visible = true);
+    inline qreal wavelength();
+    inline bool order(int order);
 
     void plot();
-    void plot(Reflector *reflector);
+    void replot(bool orders[5]);
+    void replot(Reflector * reflector);
 
-    void append(qreal x, qreal y, int order = 0);
-    void append(qreal angle, int order = 0);
+    void append(qreal x, qreal y);
+    void append(qreal x, qreal y, int order);
 private:
+    inline void adjust(qreal adjustment);
+    inline void remove(int order);
+
     unsigned int m_recursionDepth;
-    LightSource *m_lightSource;
-    Reflector *m_reflector;
-    Ray *m_next[5];
-    static unsigned int counter;
+    LightSource * m_lightSource;
+    Ray * m_rays[5];
+    Reflector * m_reflector;
 };
+
+qreal Ray::wavelength()
+{
+    return m_lightSource->wavelength();
+}
+
+bool Ray::order(int order)
+{
+    //returns true if the specified diffraction order is desired but not present
+    //returns false otherwise
+    return order >= -2 && order <= 2 && !m_rays[order + 2] && m_lightSource->order(order);
+}
 
 void Ray::adjust(qreal adjustment)
 {
@@ -40,14 +52,10 @@ void Ray::adjust(qreal adjustment)
     setLine(newLine);
 }
 
-qreal Ray::wavelength() const
+void Ray::remove(int order)
 {
-    return m_lightSource->wavelength();
-}
-
-bool Ray::visibleOrder(int order) const
-{
-    return m_lightSource->visibleOrder(order);
+    delete m_rays[order + 2];
+    m_rays[order + 2] = nullptr;
 }
 
 #endif // RAY_H

@@ -1,6 +1,6 @@
 #include "opticaldeviceform.h"
 
-OpticalDeviceForm::OpticalDeviceForm(QWidget *parent) :
+OpticalDeviceForm::OpticalDeviceForm(QWidget * parent) :
     QWidget(parent)
 {
 }

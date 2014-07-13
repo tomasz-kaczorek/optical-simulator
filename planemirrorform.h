@@ -3,34 +3,33 @@
 
 #include "opticaldeviceform.h"
 
+class OpticalDeviceTabWidget;
 class PlaneMirror;
 
 class QDoubleSpinBox;
-class QGridLayout;
-class QLabel;
 class QLineEdit;
+class QPushButton;
 
 class PlaneMirrorForm : public OpticalDeviceForm
 {
 public:
-    explicit PlaneMirrorForm(PlaneMirror *planeMirror, QWidget *parent = 0);
+    explicit PlaneMirrorForm(PlaneMirror * PlaneMirror, OpticalDeviceTabWidget * parent = 0);
     ~PlaneMirrorForm();
+
     QString name();
+private:
     void apply();
     void cancel();
-private:
-    PlaneMirror *m_planeMirror;
-    QGridLayout *m_layout;
-    QLabel *m_nameLabel;
-    QLineEdit *m_nameLineEdit;
-    QLabel *m_xLabel;
-    QDoubleSpinBox *m_xSpinBox;
-    QLabel *m_yLabel;
-    QDoubleSpinBox *m_ySpinBox;
-    QLabel *m_angleLabel;
-    QDoubleSpinBox *m_angleSpinBox;
-    QLabel *m_radiusLabel;
-    QDoubleSpinBox *m_radiusSpinBox;
+    void changed();
+
+    PlaneMirror * m_planeMirror;
+    QLineEdit * m_nameLineEdit;
+    QDoubleSpinBox * m_xSpinBox;
+    QDoubleSpinBox * m_ySpinBox;
+    QDoubleSpinBox * m_angleSpinBox;
+    QDoubleSpinBox * m_radiusSpinBox;
+    QPushButton * m_applyButton;
+    QPushButton * m_cancelButton;
 };
 
 #endif // PLANEMIRRORFORM_H

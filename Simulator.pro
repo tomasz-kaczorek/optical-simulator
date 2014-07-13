@@ -17,10 +17,8 @@ SOURCES += main.cpp\
     planemirror.cpp \
     concavemirror.cpp \
     lightsource.cpp \
-    dockabletabwidget.cpp \
     reflector.cpp \
     diffractiongrating.cpp \
-    reflectortab.cpp \
     aimdialog.cpp \
     ray.cpp \
     settings.cpp \
@@ -32,17 +30,17 @@ SOURCES += main.cpp\
     opticaldevicetabwidget.cpp \
     concavemirrorform.cpp \
     diffractiongratingform.cpp \
-    lightsourceform.cpp \
-    opticaldevice.cpp
+    opticaldevice.cpp \
+    normal.cpp \
+    pointsource.cpp \
+    pointsourceform.cpp
 
 HEADERS  += mainwindow.h \
     planemirror.h \
     concavemirror.h \
     lightsource.h \
-    dockabletabwidget.h \
     reflector.h \
     diffractiongrating.h \
-    reflectortab.h \
     aimdialog.h \
     settings.h \
     ray.h \
@@ -54,5 +52,7 @@ HEADERS  += mainwindow.h \
     opticaldevicetabwidget.h \
     concavemirrorform.h \
     diffractiongratingform.h \
-    lightsourceform.h \
-    opticaldevice.h
+    opticaldevice.h \
+    normal.h \
+    pointsource.h \
+    pointsourceform.h

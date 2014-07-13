@@ -3,19 +3,34 @@
 
 #include <QGraphicsScene>
 
-class Reflector;
 class LightSource;
+class OpticalDeviceTabWidget;
+class Reflector;
 
 class OpticalSystem : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    OpticalSystem(qreal x, qreal y, qreal width, qreal height, QObject *parent = 0);
-    void addReflector(Reflector *reflector);
-    void addLightSource(LightSource *lightSource);
-    inline QList<Reflector *> const &reflectors();
-    inline QList<LightSource *> const &lightSources();
+    OpticalSystem(QObject * parent = 0);
+    ~OpticalSystem();
+
+    void addPlaneMirror();
+    void addConcaveMirror();
+    void addDiffractionGrating();
+    void removeReflector();
+
+    void addPointSource();
+    void removeLightSource();
+
+    inline OpticalDeviceTabWidget * reflectorsTabs();
+    inline OpticalDeviceTabWidget * lightSourcesTabs();
+
+    inline QList<Reflector *> const & reflectors();
+    inline QList<LightSource *> const & lightSources();
 private:
+    OpticalDeviceTabWidget *m_reflectorsTabs;
+    OpticalDeviceTabWidget *m_lightSourcesTabs;
+
     QList<Reflector *> m_reflectors;
     QList<LightSource *> m_lightSources;
 signals:
@@ -24,12 +39,22 @@ public slots:
 
 };
 
-QList<Reflector *> const &OpticalSystem::reflectors()
+OpticalDeviceTabWidget * OpticalSystem::reflectorsTabs()
+{
+    return m_reflectorsTabs;
+}
+
+OpticalDeviceTabWidget * OpticalSystem::lightSourcesTabs()
+{
+    return m_lightSourcesTabs;
+}
+
+QList<Reflector *> const & OpticalSystem::reflectors()
 {
     return m_reflectors;
 }
 
-QList<LightSource *> const &OpticalSystem::lightSources()
+QList<LightSource *> const & OpticalSystem::lightSources()
 {
     return m_lightSources;
 }

@@ -1,30 +1,28 @@
 #ifndef OPTICALDEVICETABWIDGET_H
 #define OPTICALDEVICETABWIDGET_H
 
-#include <QWidget>
+#include <QTabWidget>
 
 class OpticalDeviceForm;
 
-class QGridLayout;
 class QPushButton;
-class QTabWidget;
 
-class OpticalDeviceTabWidget : public QWidget
+class OpticalDeviceTabWidget : public QTabWidget
 {
     Q_OBJECT
 public:
-    explicit OpticalDeviceTabWidget(QWidget *parent = 0);
-    void addTab(OpticalDeviceForm *page);
-private:
-    QGridLayout *m_layout;
-    QTabWidget *m_tabs;
-    QPushButton *m_applyButton;
-    QPushButton *m_cancelButton;
-    QPushButton *m_removeButton;
-public slots:
+    explicit OpticalDeviceTabWidget(QWidget * parent = 0);
+    ~OpticalDeviceTabWidget();
+
+    void addTab(OpticalDeviceForm * form);
+    void removeCurrentTab();
+private slots:
     void apply();
     void cancel();
-    void remove();
+    void changed();
+private:
+    int	addTab(QWidget * page, QString const & label);
+    int	addTab(QWidget * page, QIcon const & icon, QString const & label);
 };
 
 #endif // OPTICALDEVICETABWIDGET_H
