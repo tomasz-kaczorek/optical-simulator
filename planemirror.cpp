@@ -59,6 +59,11 @@ void PlaneMirror::setGeometry(qreal x, qreal y, qreal angle, qreal radius)
     }
 }
 
+int PlaneMirror::type()
+{
+    return OpticalDevice::PlaneMirror;
+}
+
 QPointF PlaneMirror::leftEdge() const
 {
     return mapToScene(QPointF(-m_radius, 0.0));

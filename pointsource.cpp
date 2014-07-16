@@ -29,6 +29,11 @@ PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal
     }
 }
 
+PointSource::~PointSource()
+{
+    qDeleteAll(m_rays);
+}
+
 qreal PointSource::beginAngle()
 {
     return m_beginAngle;
@@ -95,6 +100,11 @@ void PointSource::addRay(qreal angle)
     scene()->addItem(ray);
 }
 
+int PointSource::type()
+{
+    return OpticalDevice::PointSource;
+}
+
 qreal PointSource::wavelength()
 {
     return m_wavelength;
@@ -135,7 +145,7 @@ QColor PointSource::color()
     }
     else R = G = B = 0.0;
 
-    return QColor(R, G, B, 128.0);
+    return QColor(R, G, B, 255.0);
 }
 
 bool PointSource::order(int order)

@@ -99,9 +99,9 @@ void MainWindow::readSettings()
         Settings::maxX = 2000;
         Settings::minY = 0;
         Settings::maxY = 2000;
-        Settings::primaryColor = QColor(settings.value("PrimaryColor", "#000000").toString());
-        Settings::secondaryColor = QColor(settings.value("SecondaryColor", "#505050").toString());
-        Settings::backgroundColor = QColor(settings.value("BackgroundColor", "#707070").toString());
+        Settings::primaryColor = QColor(settings.value("PrimaryColor", "#FFFFFF").toString());
+        Settings::secondaryColor = QColor(settings.value("SecondaryColor", "#7F7F7F").toString());
+        Settings::backgroundColor = QColor(settings.value("BackgroundColor", "#000000").toString());
         Settings::deviceThickness = settings.value("DeviceThickness", 0.0).toDouble();
         Settings::normals = settings.value("Normals", true).toBool();
         Settings::labels = settings.value("Labels", true).toBool();

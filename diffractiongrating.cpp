@@ -78,6 +78,11 @@ void DiffractionGrating::setGeometry(qreal x, qreal y, qreal angle, qreal radius
     }
 }
 
+int DiffractionGrating::type()
+{
+    return OpticalDevice::DiffractionGrating;
+}
+
 QPointF DiffractionGrating::leftEdge() const
 {
     return mapToScene(QPointF(-m_radius, 0.0));

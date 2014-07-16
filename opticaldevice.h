@@ -17,6 +17,13 @@ protected: //not meant to be used independently
     OpticalDevice(OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
     ~OpticalDevice();
 public:
+    enum { Absorber = UserType,
+           PlaneMirror = UserType + 1,
+           ConcaveMirror = UserType + 2,
+           DiffractionGrating = UserType + 3,
+           Slit = UserType + 4,
+           PointSource = UserType + 5 };
+
     void addLabel();
     void showLabel();
     void hideLabel();

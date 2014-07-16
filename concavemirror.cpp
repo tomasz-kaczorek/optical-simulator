@@ -70,6 +70,11 @@ void ConcaveMirror::setGeometry(qreal x, qreal y, qreal angle, qreal radius, qre
     }
 }
 
+int ConcaveMirror::type()
+{
+    return OpticalDevice::ConcaveMirror;
+}
+
 QPointF ConcaveMirror::leftEdge() const
 {
     return mapToScene(QPointF(-m_radius, -2.0 * m_focalLength * (1.0 - qCos(m_angularRadius))));

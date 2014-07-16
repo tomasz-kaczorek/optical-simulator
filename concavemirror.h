@@ -13,6 +13,8 @@ public:
     qreal focalLength() const;
     void setGeometry(qreal x, qreal y, qreal angle, qreal radius, qreal focalLength);
 
+    int type();
+
     QPointF leftEdge() const;
     QPointF rightEdge() const;
 

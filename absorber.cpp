@@ -18,6 +18,11 @@ Absorber::~Absorber()
 {
 }
 
+int Absorber::type()
+{
+    return OpticalDevice::Absorber;
+}
+
 QPointF Absorber::leftEdge() const
 {
     return m_leftEdge;

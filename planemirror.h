@@ -12,6 +12,8 @@ public:
     qreal radius() const;
     void setGeometry(qreal x, qreal y, qreal angle, qreal radius);
 
+    int type();
+
     QPointF leftEdge() const;
     QPointF rightEdge() const;
 
