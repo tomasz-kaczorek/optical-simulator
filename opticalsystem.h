@@ -1,17 +1,20 @@
 #ifndef OPTICALSYSTEM_H
 #define OPTICALSYSTEM_H
 
-#include <QGraphicsScene>
+#include <QGraphicsView>
 
 class LightSource;
 class OpticalDeviceTabWidget;
 class Reflector;
 
-class OpticalSystem : public QGraphicsScene
+class QGraphicsScene;
+class QMainWindow;
+
+class OpticalSystem : public QGraphicsView
 {
     Q_OBJECT
 public:
-    OpticalSystem(QObject * parent = 0);
+    OpticalSystem(QMainWindow * parent = 0);
     ~OpticalSystem();
 
     void addPlaneMirror();
@@ -22,12 +25,13 @@ public:
     void addPointSource();
     void removeLightSource();
 
-    inline OpticalDeviceTabWidget * reflectorsTabs();
-    inline OpticalDeviceTabWidget * lightSourcesTabs();
+    OpticalDeviceTabWidget * reflectorsTabs();
+    OpticalDeviceTabWidget * lightSourcesTabs();
 
-    inline QList<Reflector *> const & reflectors();
-    inline QList<LightSource *> const & lightSources();
+    QList<Reflector *> const & reflectors();
+    QList<LightSource *> const & lightSources();
 private:
+    QGraphicsScene *m_scene;
     OpticalDeviceTabWidget *m_reflectorsTabs;
     OpticalDeviceTabWidget *m_lightSourcesTabs;
 
@@ -38,25 +42,5 @@ signals:
 public slots:
 
 };
-
-OpticalDeviceTabWidget * OpticalSystem::reflectorsTabs()
-{
-    return m_reflectorsTabs;
-}
-
-OpticalDeviceTabWidget * OpticalSystem::lightSourcesTabs()
-{
-    return m_lightSourcesTabs;
-}
-
-QList<Reflector *> const & OpticalSystem::reflectors()
-{
-    return m_reflectors;
-}
-
-QList<LightSource *> const & OpticalSystem::lightSources()
-{
-    return m_lightSources;
-}
 
 #endif // OPTICALSYSTEM_H

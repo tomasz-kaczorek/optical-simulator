@@ -29,12 +29,7 @@ MainWindow::MainWindow(QWidget * parent) :
     readSettings();
     buildToolbar();
 
-    m_view = new QGraphicsView(this);
-    m_reflectorDockWidget = new QDockWidget(tr("Reflectors"), this);
-    m_lightSourceDockWidget = new QDockWidget(tr("Light Sources"), this);
-    setCentralWidget(m_view);
-    addDockWidget(Qt::BottomDockWidgetArea, m_reflectorDockWidget);
-    addDockWidget(Qt::BottomDockWidgetArea, m_lightSourceDockWidget);
+    m_system = new OpticalSystem(this);
 
 }
 
@@ -140,12 +135,7 @@ void MainWindow::removeLightSource()
 
 void MainWindow::newSystem()
 {
-    closeSystem();
 
-    m_system = new OpticalSystem(this);
-    m_view->setScene(m_system);
-    m_reflectorDockWidget->setWidget(m_system->reflectorsTabs());
-    m_lightSourceDockWidget->setWidget(m_system->lightSourcesTabs());
 }
 
 void MainWindow::openSystem()
@@ -155,6 +145,5 @@ void MainWindow::openSystem()
 
 void MainWindow::closeSystem()
 {
-    delete m_system;
-    m_system = nullptr;
+
 }

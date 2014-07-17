@@ -23,9 +23,6 @@ private:
     void writeSettings();
     void readSettings();
     OpticalSystem * m_system;
-    QGraphicsView * m_view;
-    QDockWidget * m_reflectorDockWidget;
-    QDockWidget * m_lightSourceDockWidget;
 public slots:
     void addPlaneMirror();
     void addConcaveMirror();
