@@ -135,7 +135,7 @@ void MainWindow::removeLightSource()
 
 void MainWindow::newSystem()
 {
-
+    m_system->save();
 }
 
 void MainWindow::openSystem()

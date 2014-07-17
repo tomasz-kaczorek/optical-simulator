@@ -14,8 +14,12 @@
 #include "settings.h"
 
 #include <QDockWidget>
+#include <QFile>
+#include <QFileDialog>
 #include <QGraphicsView>
 #include <QMainWindow>
+#include <QXmlStreamReader>
+#include <QXmlStreamWriter>
 
 OpticalSystem::OpticalSystem(QMainWindow * parent) :
     QGraphicsView(parent)
@@ -50,6 +54,34 @@ OpticalSystem::~OpticalSystem()
     delete m_reflectors.takeFirst();
     delete m_reflectors.takeFirst();
     delete m_reflectors.takeFirst();
+}
+
+void OpticalSystem::open()
+{
+
+}
+
+#include <QDebug>
+
+void OpticalSystem::save()
+{
+    QFile file(QFileDialog::getSaveFileName(this, "Save System", QString(), "XML files (*.xml)"));
+    file.open(QIODevice::WriteOnly);
+    QXmlStreamWriter writer(&file);
+    writer.writeStartDocument("1.0");
+    writer.writeStartElement("OpticalScene");
+    writer.writeAttribute("minX", QString::number(Settings::minX));
+    writer.writeAttribute("maxX", QString::number(Settings::maxX));
+    writer.writeAttribute("minY", QString::number(Settings::minY));
+    writer.writeAttribute("maxY", QString::number(Settings::maxY));
+    writer.writeStartElement("Reflectors");
+    foreach(Reflector * reflector, m_reflectors) reflector->save(&writer);
+    writer.writeEndElement();
+    writer.writeStartElement("LightSources");
+    foreach(LightSource * lightSource, m_lightSources) lightSource->save(&writer);
+    writer.writeEndElement();
+    writer.writeEndDocument();
+    file.close();
 }
 
 void OpticalSystem::addPlaneMirror()

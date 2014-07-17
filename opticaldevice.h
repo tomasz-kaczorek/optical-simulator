@@ -11,18 +11,15 @@ class Normal;
 class OpticalSystem;
 class Reflector;
 
+class QXmlStreamWriter;
+
 class OpticalDevice : public QGraphicsItem
 {
 protected: //not meant to be used independently
     OpticalDevice(OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
     ~OpticalDevice();
 public:
-    enum { Absorber = UserType,
-           PlaneMirror = UserType + 1,
-           ConcaveMirror = UserType + 2,
-           DiffractionGrating = UserType + 3,
-           Slit = UserType + 4,
-           PointSource = UserType + 5 };
+    virtual void save(QXmlStreamWriter * writer) const = 0;
 
     void addLabel();
     void showLabel();
@@ -32,7 +29,7 @@ public:
     void showNormal();
     void hideNormal();
 
-    QString name();
+    QString name() const;
     void setName(QString name);
 
     QList<Reflector *> const & reflectors();

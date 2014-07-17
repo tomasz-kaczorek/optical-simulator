@@ -50,7 +50,7 @@ void OpticalDevice::hideNormal()
     if(m_normal) m_normal->hide();
 }
 
-QString OpticalDevice::name()
+QString OpticalDevice::name() const
 {
     return m_label ? m_label->text() : QString();
 }

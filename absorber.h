@@ -3,13 +3,15 @@
 
 #include "reflector.h"
 
+class QXmlStreamWriter;
+
 class Absorber : public Reflector
 {
 public:
     Absorber(qreal x1, qreal y1, qreal x2, qreal y2, OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
     ~Absorber();
 
-    int type();
+    void save(QXmlStreamWriter * writer) const;
 
     QPointF leftEdge() const;
     QPointF rightEdge() const;

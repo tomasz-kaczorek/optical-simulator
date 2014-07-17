@@ -7,6 +7,7 @@
 
 #include <qmath.h>
 #include <QPainter>
+#include <QXmlStreamWriter>
 
 DiffractionGrating::DiffractionGrating(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density, OpticalSystem * opticalSystem, QGraphicsItem * parent) :
     Reflector(opticalSystem, parent)
@@ -78,9 +79,17 @@ void DiffractionGrating::setGeometry(qreal x, qreal y, qreal angle, qreal radius
     }
 }
 
-int DiffractionGrating::type()
+void DiffractionGrating::save(QXmlStreamWriter * writer) const
 {
-    return OpticalDevice::DiffractionGrating;
+    writer->writeStartElement("DiffractionGrating");
+    writer->writeTextElement("Name", name());
+    writer->writeTextElement("X", QString::number(x()));
+    writer->writeTextElement("Y", QString::number(y()));
+    writer->writeTextElement("Angle", QString::number(rotation()));
+    writer->writeTextElement("Radius", QString::number(radius()));
+    writer->writeTextElement("BlazeAngle", QString::number(blazeAngle()));
+    writer->writeTextElement("Density", QString::number(density()));
+    writer->writeEndElement();
 }
 
 QPointF DiffractionGrating::leftEdge() const

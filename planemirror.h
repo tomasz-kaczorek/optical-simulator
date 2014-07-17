@@ -12,7 +12,7 @@ public:
     qreal radius() const;
     void setGeometry(qreal x, qreal y, qreal angle, qreal radius);
 
-    int type();
+    void save(QXmlStreamWriter * writer) const;
 
     QPointF leftEdge() const;
     QPointF rightEdge() const;

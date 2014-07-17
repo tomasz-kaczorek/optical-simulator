@@ -17,6 +17,9 @@ public:
     OpticalSystem(QMainWindow * parent = 0);
     ~OpticalSystem();
 
+    void open();
+    void save();
+
     void addPlaneMirror();
     void addConcaveMirror();
     void addDiffractionGrating();
