@@ -50,13 +50,12 @@ void MainWindow::buildToolbar()
     toolbar->addAction("Remove Reflector", this, SLOT(removeReflector()));
     toolbar->addAction("Remove Light Source", this, SLOT(removeLightSource()));
     toolbar->addSeparator();
-    toolbar->addAction("New System", this, SLOT(newSystem()));
-    toolbar->addAction("Close System", this, SLOT(closeSystem()));
+    toolbar->addAction("Open System", this, SLOT(openSystem()));
+    toolbar->addAction("Save System", this, SLOT(saveSystem()));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    closeSystem();
     writeSettings();
     event->accept();
 }
@@ -133,17 +132,12 @@ void MainWindow::removeLightSource()
     m_system->removeLightSource();
 }
 
-void MainWindow::newSystem()
-{
-    m_system->save();
-}
-
 void MainWindow::openSystem()
 {
-
+    m_system->open();
 }
 
-void MainWindow::closeSystem()
+void MainWindow::saveSystem()
 {
-
+    m_system->save();
 }

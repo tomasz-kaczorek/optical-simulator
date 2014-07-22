@@ -7,7 +7,6 @@
 
 #include <qmath.h>
 #include <QPainter>
-#include <QXmlStreamWriter>
 
 
 ConcaveMirror::ConcaveMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal focalLength, OpticalSystem * opticalSystem, QGraphicsItem * parent) :
@@ -71,16 +70,9 @@ void ConcaveMirror::setGeometry(qreal x, qreal y, qreal angle, qreal radius, qre
     }
 }
 
-void ConcaveMirror::save(QXmlStreamWriter * writer) const
+int ConcaveMirror::type() const
 {
-    writer->writeStartElement("ConcaveMirror");
-    writer->writeTextElement("Name", name());
-    writer->writeTextElement("X", QString::number(x()));
-    writer->writeTextElement("Y", QString::number(y()));
-    writer->writeTextElement("Angle", QString::number(rotation()));
-    writer->writeTextElement("Radius", QString::number(radius()));
-    writer->writeTextElement("FocalLength", QString::number(focalLength()));
-    writer->writeEndElement();
+    return OpticalDevice::ConcaveMirror;
 }
 
 QPointF ConcaveMirror::leftEdge() const

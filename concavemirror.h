@@ -13,7 +13,7 @@ public:
     qreal focalLength() const;
     void setGeometry(qreal x, qreal y, qreal angle, qreal radius, qreal focalLength);
 
-    void save(QXmlStreamWriter * writer) const;
+    int type() const;
 
     QPointF leftEdge() const;
     QPointF rightEdge() const;

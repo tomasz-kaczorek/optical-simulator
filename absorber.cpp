@@ -18,8 +18,9 @@ Absorber::~Absorber()
 {
 }
 
-void Absorber::save(QXmlStreamWriter *) const
+int Absorber::type() const
 {
+    return OpticalDevice::Absorber;
 }
 
 QPointF Absorber::leftEdge() const

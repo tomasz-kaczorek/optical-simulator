@@ -8,6 +8,8 @@
 #include "pointsource.h"
 #include "pointsourceform.h"
 #include "opticaldevicetabwidget.h"
+#include "opticalsystemreader.h"
+#include "opticalsystemwriter.h"
 #include "planemirror.h"
 #include "planemirrorform.h"
 #include "reflector.h"
@@ -18,8 +20,6 @@
 #include <QFileDialog>
 #include <QGraphicsView>
 #include <QMainWindow>
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
 
 OpticalSystem::OpticalSystem(QMainWindow * parent) :
     QGraphicsView(parent)
@@ -42,10 +42,7 @@ OpticalSystem::OpticalSystem(QMainWindow * parent) :
     parent->addDockWidget(Qt::BottomDockWidgetArea, reflectorDockWidget);
     parent->addDockWidget(Qt::BottomDockWidgetArea, lightSourceDockWidget);
 
-    m_reflectors.append(new Absorber(Settings::minX - 1.0, Settings::minY - 1.0, Settings::minX - 1.0, Settings::maxY - 1.0, this));
-    m_reflectors.append(new Absorber(Settings::minX - 1.0, Settings::maxY + 1.0, Settings::maxX + 1.0, Settings::maxY + 1.0, this));
-    m_reflectors.append(new Absorber(Settings::maxX + 1.0, Settings::maxY + 1.0, Settings::maxX + 1.0, Settings::minY - 1.0, this));
-    m_reflectors.append(new Absorber(Settings::maxX + 1.0, Settings::minY - 1.0, Settings::minX - 1.0, Settings::minY - 1.0, this));
+    newScene();
 }
 
 OpticalSystem::~OpticalSystem()
@@ -58,35 +55,44 @@ OpticalSystem::~OpticalSystem()
 
 void OpticalSystem::open()
 {
-
+    OpticalSystemReader reader(this);
+    reader.readFile(QFileDialog::getOpenFileName(this, "Open System", QString(), "XML files (*.xml)"));
 }
-
-#include <QDebug>
 
 void OpticalSystem::save()
 {
-    QFile file(QFileDialog::getSaveFileName(this, "Save System", QString(), "XML files (*.xml)"));
-    file.open(QIODevice::WriteOnly);
-    QXmlStreamWriter writer(&file);
-    writer.writeStartDocument("1.0");
-    writer.writeStartElement("OpticalScene");
-    writer.writeAttribute("minX", QString::number(Settings::minX));
-    writer.writeAttribute("maxX", QString::number(Settings::maxX));
-    writer.writeAttribute("minY", QString::number(Settings::minY));
-    writer.writeAttribute("maxY", QString::number(Settings::maxY));
-    writer.writeStartElement("Reflectors");
-    foreach(Reflector * reflector, m_reflectors) reflector->save(&writer);
-    writer.writeEndElement();
-    writer.writeStartElement("LightSources");
-    foreach(LightSource * lightSource, m_lightSources) lightSource->save(&writer);
-    writer.writeEndElement();
-    writer.writeEndDocument();
-    file.close();
+    OpticalSystemWriter writer(this);
+    writer.writeFile(QFileDialog::getSaveFileName(this, "Save System", QString(), "XML files (*.xml)"));
+}
+
+void OpticalSystem::newScene()
+{
+    if(m_reflectors.count() > 0)
+    {
+        delete m_reflectors.takeFirst();
+        delete m_reflectors.takeFirst();
+        delete m_reflectors.takeFirst();
+        delete m_reflectors.takeFirst();
+        m_scene->clear();
+        m_reflectors.clear();
+        m_lightSources.clear();
+        m_reflectorsTabs->removeAllTabs();
+        m_lightSourcesTabs->removeAllTabs();
+    }
+    m_reflectors.append(new Absorber(Settings::minX - 1.0, Settings::minY - 1.0, Settings::minX - 1.0, Settings::maxY - 1.0, this));
+    m_reflectors.append(new Absorber(Settings::minX - 1.0, Settings::maxY + 1.0, Settings::maxX + 1.0, Settings::maxY + 1.0, this));
+    m_reflectors.append(new Absorber(Settings::maxX + 1.0, Settings::maxY + 1.0, Settings::maxX + 1.0, Settings::minY - 1.0, this));
+    m_reflectors.append(new Absorber(Settings::maxX + 1.0, Settings::minY - 1.0, Settings::minX - 1.0, Settings::minY - 1.0, this));
 }
 
 void OpticalSystem::addPlaneMirror()
 {
-    PlaneMirror * planeMirror = new PlaneMirror("Plane Mirror", Settings::minX, Settings::minY, 0.0, Settings::minRadius, this);
+    addPlaneMirror("Plane Mirror", Settings::minX, Settings::minY, 0.0, Settings::minRadius);
+}
+
+void OpticalSystem::addPlaneMirror(QString name, qreal x, qreal y, qreal angle, qreal radius)
+{
+    PlaneMirror * planeMirror = new PlaneMirror(name, x, y, angle, radius, this);
     m_scene->addItem(planeMirror);
     m_reflectors.append(planeMirror);
 
@@ -96,7 +102,12 @@ void OpticalSystem::addPlaneMirror()
 
 void OpticalSystem::addConcaveMirror()
 {
-    ConcaveMirror * concaveMirror = new ConcaveMirror("Concave Mirror", Settings::minX, Settings::minY, 0.0, Settings::minRadius, Settings::minFocalLength, this);
+    addConcaveMirror("Concave Mirror", Settings::minX, Settings::minY, 0.0, Settings::minRadius, Settings::minFocalLength);
+}
+
+void OpticalSystem::addConcaveMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal focalLength)
+{
+    ConcaveMirror * concaveMirror = new ConcaveMirror(name, x, y, angle, radius, focalLength, this);
     m_scene->addItem(concaveMirror);
     m_reflectors.append(concaveMirror);
 
@@ -106,7 +117,12 @@ void OpticalSystem::addConcaveMirror()
 
 void OpticalSystem::addDiffractionGrating()
 {
-    DiffractionGrating * diffractionGrating = new DiffractionGrating("Diffraction Grating", Settings::minX, Settings::minY, 0.0, Settings::minRadius, 0.0, Settings::minDensity, this);
+    addDiffractionGrating("Diffraction Grating", Settings::minX, Settings::minY, 0.0, Settings::minRadius, 0.0, Settings::minDensity);
+}
+
+void OpticalSystem::addDiffractionGrating(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density)
+{
+    DiffractionGrating * diffractionGrating = new DiffractionGrating(name, x, y, angle, radius, blazeAngle, density, this);
     m_scene->addItem(diffractionGrating);
     m_reflectors.append(diffractionGrating);
 
@@ -129,7 +145,12 @@ void OpticalSystem::removeReflector()
 void OpticalSystem::addPointSource()
 {
     bool array[5] = {true, true, true, true, true};
-    PointSource * pointSource = new PointSource("Point Source", Settings::minX, Settings::minY, 0.0, 0.0, 0, Settings::minWavelength, array, true, this);
+    addPointSource("Point Source", Settings::minX, Settings::minY, 0.0, 0.0, 0, Settings::minWavelength, array, true);
+}
+
+void OpticalSystem::addPointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[], bool active)
+{
+    PointSource * pointSource = new PointSource(name, x, y, beginAngle, endAngle, quantity, wavelength, orders, active, this);
     m_scene->addItem(pointSource);
     m_lightSources.append(pointSource);
 
@@ -147,6 +168,11 @@ void OpticalSystem::removeLightSource()
         delete lightSource;
         m_lightSourcesTabs->removeCurrentTab();
     }
+}
+
+QGraphicsScene * OpticalSystem::scene()
+{
+    return m_scene;
 }
 
 OpticalDeviceTabWidget * OpticalSystem::reflectorsTabs()

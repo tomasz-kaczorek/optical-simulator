@@ -21,6 +21,14 @@ void OpticalDeviceTabWidget::removeCurrentTab()
     delete currentWidget();
 }
 
+void OpticalDeviceTabWidget::removeAllTabs()
+{
+    while(count() > 0)
+    {
+        delete currentWidget();
+    }
+}
+
 void OpticalDeviceTabWidget::apply()
 {
     OpticalDeviceForm * form = static_cast<OpticalDeviceForm *>(currentWidget());

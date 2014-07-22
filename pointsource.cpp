@@ -1,9 +1,9 @@
 #include "pointsource.h"
 
+#include "opticalsystem.h"
 #include "ray.h"
 
 #include <QGraphicsScene>
-#include <QXmlStreamWriter>
 
 PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active, OpticalSystem * opticalSystem, QGraphicsItem *parent) :
     LightSource(opticalSystem, parent)
@@ -98,28 +98,12 @@ void PointSource::addRay(qreal angle)
 {
     Ray * ray = new Ray(this, x(), y(), angle);
     m_rays.append(ray);
-    scene()->addItem(ray);
+    m_opticalSystem->scene()->addItem(ray);
 }
 
-void PointSource::save(QXmlStreamWriter * writer) const
+int PointSource::type() const
 {
-    writer->writeStartElement("PointSource");
-    writer->writeTextElement("Name", name());
-    writer->writeTextElement("X", QString::number(x()));
-    writer->writeTextElement("Y", QString::number(y()));
-    writer->writeTextElement("BeginAngle", QString::number(beginAngle()));
-    writer->writeTextElement("EndAngle", QString::number(endAngle()));
-    writer->writeTextElement("Quantity", QString::number(quantity()));
-    writer->writeTextElement("Wavelength", QString::number(wavelength()));
-    writer->writeStartElement("VisibleOrders");
-    writer->writeTextElement("SecondNegative", m_orders[0] ? "Yes" : "No");
-    writer->writeTextElement("FirstNegative", m_orders[1] ? "Yes" : "No");
-    writer->writeTextElement("Zero", m_orders[2] ? "Yes" : "No");
-    writer->writeTextElement("FirstPositive", m_orders[3] ? "Yes" : "No");
-    writer->writeTextElement("SecondPositive", m_orders[4] ? "Yes" : "No");
-    writer->writeEndElement();
-    writer->writeTextElement("Active", active() ? "Yes" : "No");
-    writer->writeEndElement();
+    return OpticalDevice::PointSource;
 }
 
 qreal PointSource::wavelength() const

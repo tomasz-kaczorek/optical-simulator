@@ -14,7 +14,7 @@ public:
     qreal density() const;
     void setGeometry(qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density);
 
-    void save(QXmlStreamWriter * writer) const;
+    int type() const;
 
     QPointF leftEdge() const;
     QPointF rightEdge() const;

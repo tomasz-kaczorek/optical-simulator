@@ -9,6 +9,8 @@ class Reflector;
 
 class QGraphicsScene;
 class QMainWindow;
+class QXmlStreamReader;
+class QXmlStreamWriter;
 
 class OpticalSystem : public QGraphicsView
 {
@@ -20,13 +22,21 @@ public:
     void open();
     void save();
 
+    void newScene();
+
     void addPlaneMirror();
+    void addPlaneMirror(QString name, qreal x, qreal y, qreal angle, qreal radius);
     void addConcaveMirror();
+    void addConcaveMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal focalLength);
     void addDiffractionGrating();
+    void addDiffractionGrating(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density);
     void removeReflector();
 
     void addPointSource();
+    void addPointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active);
     void removeLightSource();
+
+    QGraphicsScene * scene();
 
     OpticalDeviceTabWidget * reflectorsTabs();
     OpticalDeviceTabWidget * lightSourcesTabs();

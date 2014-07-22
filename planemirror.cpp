@@ -7,8 +7,6 @@
 
 #include <QPainter>
 #include <QPainterPath>
-#include <QPainterPathStroker>
-#include <QXmlStreamWriter>
 
 PlaneMirror::PlaneMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, OpticalSystem * opticalSystem, QGraphicsItem * parent) :
     Reflector(opticalSystem, parent)
@@ -60,15 +58,9 @@ void PlaneMirror::setGeometry(qreal x, qreal y, qreal angle, qreal radius)
     }
 }
 
-void PlaneMirror::save(QXmlStreamWriter * writer) const
+int PlaneMirror::type() const
 {
-    writer->writeStartElement("PlaneMirror");
-    writer->writeTextElement("Name", name());
-    writer->writeTextElement("X", QString::number(x()));
-    writer->writeTextElement("Y", QString::number(y()));
-    writer->writeTextElement("Angle", QString::number(rotation()));
-    writer->writeTextElement("Radius", QString::number(radius()));
-    writer->writeEndElement();
+    return OpticalDevice::PlaneMirror;
 }
 
 QPointF PlaneMirror::leftEdge() const

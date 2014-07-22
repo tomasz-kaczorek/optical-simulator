@@ -19,7 +19,7 @@ public:
 
     void addRay(qreal angle);
 
-    void save(QXmlStreamWriter * writer) const;
+    int type() const;
 
     qreal wavelength() const;
     QColor color() const;

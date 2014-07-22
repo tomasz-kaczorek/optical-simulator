@@ -33,7 +33,9 @@ SOURCES += main.cpp\
     opticaldevice.cpp \
     normal.cpp \
     pointsource.cpp \
-    pointsourceform.cpp
+    pointsourceform.cpp \
+    opticalsystemwriter.cpp \
+    opticalsystemreader.cpp
 
 HEADERS  += mainwindow.h \
     planemirror.h \
@@ -55,4 +57,6 @@ HEADERS  += mainwindow.h \
     opticaldevice.h \
     normal.h \
     pointsource.h \
-    pointsourceform.h
+    pointsourceform.h \
+    opticalsystemwriter.h \
+    opticalsystemreader.h

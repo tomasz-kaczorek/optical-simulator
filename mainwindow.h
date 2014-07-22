@@ -30,9 +30,8 @@ public slots:
     void addLightSource();
     void removeReflector();
     void removeLightSource();
-    void newSystem();
     void openSystem();
-    void closeSystem();
+    void saveSystem();
 };
 
 #endif // MAINWINDOW_H

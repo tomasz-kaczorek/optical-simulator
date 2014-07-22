@@ -16,6 +16,7 @@ public:
 
     void addTab(OpticalDeviceForm * form);
     void removeCurrentTab();
+    void removeAllTabs();
 private slots:
     void apply();
     void cancel();
