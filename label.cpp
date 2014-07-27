@@ -7,6 +7,7 @@ Label::Label(QGraphicsItem * parent) :
     QGraphicsSimpleTextItem(parent)
 {
     setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    setFlag(QGraphicsItem::ItemStacksBehindParent);
     setBrush(QBrush(Settings::secondaryColor));
     setFont(QFont("Arial", 8));
     setRotation(0.0);

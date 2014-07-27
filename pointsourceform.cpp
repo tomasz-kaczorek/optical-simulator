@@ -1,5 +1,6 @@
 #include "pointsourceform.h"
 
+#include "aimdialog.h"
 #include "opticaldevicetabwidget.h"
 #include "pointsource.h"
 #include "settings.h"
@@ -165,49 +166,20 @@ QString PointSourceForm::name()
 
 void PointSourceForm::aim()
 {
-    //    AimDialog aimDialog(m_mainWindow->getNames());
-    //    if(aimDialog.exec())
-    //    {
-    //        Reflector *reflector = m_mainWindow->getReflector(aimDialog.getIndex());
-    //        if(aimDialog.getChoice() == 0)
-    //        {
-    //            QPointF center = reflector->pos();
-    //            QLineF direction(m_pointSource->x(), m_pointSource->y(), center.x(), center.y());
-    //            m_beginAngleSpinBox->setValue(360-direction.angle());
-    //            m_endAngleSpinBox->setValue(360-direction.angle());
-    //        }
-    //        else if(aimDialog.getChoice() == 1)
-    //        {
-    //            QPointF left = reflector->leftEdge();
-    //            QLineF direction(m_pointSource->x(), m_pointSource->y(), left.x(), left.y());
-    //            m_beginAngleSpinBox->setValue(360-direction.angle());
-    //            m_endAngleSpinBox->setValue(360-direction.angle());
-    //        }
-    //        else if(aimDialog.getChoice() == 2)
-    //        {
-    //            QPointF right = reflector->rightEdge();
-    //            QLineF direction(m_pointSource->x(), m_pointSource->y(), right.x(), right.y());
-    //            m_beginAngleSpinBox->setValue(360-direction.angle());
-    //            m_endAngleSpinBox->setValue(360-direction.angle());
-    //        }
-    //        else if(aimDialog.getChoice() == 3)
-    //        {
-    //            QPointF left = reflector->leftEdge();
-    //            QPointF right = reflector->rightEdge();
-    //            QLineF directionLeft(m_pointSource->x(), m_pointSource->y(), left.x(), left.y());
-    //            QLineF directionRight(m_pointSource->x(), m_pointSource->y(), right.x(), right.y());
-    //            if(directionLeft.angle() < directionRight.angle())
-    //            {
-    //                m_beginAngleSpinBox->setValue(360-directionLeft.angle());
-    //                m_endAngleSpinBox->setValue(360-directionRight.angle());
-    //            }
-    //            else
-    //            {
-    //                m_beginAngleSpinBox->setValue(360-directionRight.angle());
-    //                m_endAngleSpinBox->setValue(360-directionLeft.angle());
-    //            }
-    //        }
-    //    }
+        AimDialog aimDialog(m_pointSource, this);
+        if(aimDialog.exec() == QDialog::Accepted)
+        {
+            if(aimDialog.hasBeginPoint())
+            {
+                QLineF line(m_pointSource->pos(), aimDialog.beginPoint());
+                m_beginAngleSpinBox->setValue(90 - line.angle());
+            }
+            if(aimDialog.hasEndPoint())
+            {
+                QLineF line(m_pointSource->pos(), aimDialog.endPoint());
+                m_endAngleSpinBox->setValue(90 - line.angle());
+            }
+        }
 }
 
 void PointSourceForm::apply()

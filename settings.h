@@ -31,8 +31,8 @@ namespace Settings {
     const qreal maxWavelength = 780.0; //maximum LightSource's wavelength
     const int minQuantity = 0; //minimum quantity of LightSource's rays
     const int maxQuantity = 100; //maximum quantity of LightSource's rays
-    const int decimals = 6; //number of decimals
-    const qreal epsilon = 0.0000001; //maximum difference of two qreal values, that are considered equal
+    const int decimals = 8; //number of decimals
+    const qreal epsilon = 0.000001; //maximum difference of two qreal values, that are considered equal
     const unsigned int allowedRecursionDepth = 20; //maximum recursion depth, it determines maximum number of ray's segments
     //functions
     inline bool equalZero(qreal x)

@@ -29,6 +29,8 @@ public:
 
     virtual int type() const = 0;
 
+    OpticalSystem * system();
+
     void addLabel();
     void showLabel();
     void hideLabel();

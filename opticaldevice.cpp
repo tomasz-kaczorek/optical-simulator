@@ -14,10 +14,16 @@ OpticalDevice::OpticalDevice(OpticalSystem * opticalSystem, QGraphicsItem * pare
     m_normal(nullptr)
 {
     m_pen = QPen(Settings::primaryColor, Settings::deviceThickness, Qt::SolidLine, Qt::RoundCap);
+    setZValue(1.0);
 }
 
 OpticalDevice::~OpticalDevice()
 {
+}
+
+OpticalSystem *OpticalDevice::system()
+{
+    return m_opticalSystem;
 }
 
 void OpticalDevice::addLabel()

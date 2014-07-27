@@ -1,51 +1,115 @@
 #include "aimdialog.h"
-#include <QVBoxLayout>
+
+#include <opticaldevice.h>
+#include <opticalsystem.h>
+#include <reflector.h>
+
 #include <QComboBox>
+#include <QDoubleSpinBox>
 #include <QGroupBox>
-#include <QRadioButton>
+#include <QHBoxLayout>
+#include <QLabel>
 #include <QPlastiqueStyle>
 #include <QPushButton>
+#include <QStringList>
+#include <QVBoxLayout>
 
-AimDialog::AimDialog(QStringList names, QWidget *parent) :
-    QDialog(parent)
+AimDialog::AimDialog(OpticalDevice * opticalDevice, QWidget * parent) :
+    QDialog(parent),
+    m_reflectors(opticalDevice->system()->reflectors())
 {
-    m_layout = new QVBoxLayout(this);
-    m_reflectorsComboBox = new QComboBox(this);
-    m_reflectorsComboBox->addItems(names);
-    m_groupBox = new QGroupBox(tr("aim at:"), this);
-    m_groupBox->setStyle(new QPlastiqueStyle());
-    m_groupBoxLayout = new QVBoxLayout(m_groupBox);
-    m_aimCenterRadioButton = new QRadioButton(tr("center"), m_groupBox);
-    m_aimCenterRadioButton->setChecked(true);
-    m_aimLeftRadioButton = new QRadioButton(tr("left edge"), m_groupBox);
-    m_aimRightRadioButton = new QRadioButton(tr("right edge"), m_groupBox);
-    m_aimBothRadioButton = new QRadioButton(tr("both edges"), m_groupBox);
-    m_okPushButton = new QPushButton(tr("OK"), this);
+    QStringList points;
+    points.append("");
+    points.append("Left Edge");
+    points.append("Center");
+    points.append("Right Edge");
 
-    m_layout->addWidget(m_reflectorsComboBox);
-    m_groupBoxLayout->addWidget(m_aimCenterRadioButton);
-    m_groupBoxLayout->addWidget(m_aimLeftRadioButton);
-    m_groupBoxLayout->addWidget(m_aimRightRadioButton);
-    m_groupBoxLayout->addWidget(m_aimBothRadioButton);
-    m_layout->addWidget(m_groupBox);
-    m_layout->addWidget(m_okPushButton);
+    QStringList names;
+    const int size = m_reflectors.size();
+    names.append("");
+    for(int i = 4; i < size; i++) names.append(m_reflectors.at(i)->name());
 
-    connect(m_okPushButton, SIGNAL(clicked()), this, SLOT(accept()));
+    m_beginAnglePointComboBox = new QComboBox();
+    m_beginAnglePointComboBox->addItems(points);
+
+    m_beginAngleReflectorComboBox = new QComboBox();
+    m_beginAngleReflectorComboBox->addItems(names);
+
+    m_endAnglePointComboBox = new QComboBox();
+    m_endAnglePointComboBox->addItems(points);
+
+    m_endAngleReflectorComboBox = new QComboBox();
+    m_endAngleReflectorComboBox->addItems(names);
+
+    QGroupBox * beginAngleGroupBox = new QGroupBox("Angle #1");
+    beginAngleGroupBox->setStyle(new QPlastiqueStyle());
+
+    QHBoxLayout * beginAngleLayout = new QHBoxLayout();
+
+    beginAngleLayout->addWidget(new QLabel("Aim at "));
+    beginAngleLayout->addWidget(m_beginAnglePointComboBox);
+    beginAngleLayout->addWidget(new QLabel(" of "));
+    beginAngleLayout->addWidget(m_beginAngleReflectorComboBox);
+
+    QGroupBox * endAngleGroupBox = new QGroupBox("Angle #2");
+    endAngleGroupBox->setStyle(new QPlastiqueStyle());
+
+    QHBoxLayout * endAngleLayout = new QHBoxLayout();
+
+    endAngleLayout->addWidget(new QLabel("Aim at "));
+    endAngleLayout->addWidget(m_endAnglePointComboBox);
+    endAngleLayout->addWidget(new QLabel(" of "));
+    endAngleLayout->addWidget(m_endAngleReflectorComboBox);
+
+    QPushButton * OKButton = new QPushButton("OK");
+    connect(OKButton, SIGNAL(clicked()), this, SLOT(accept()));
+
+    beginAngleGroupBox->setLayout(beginAngleLayout);
+
+    endAngleGroupBox->setLayout(endAngleLayout);
+
+    QVBoxLayout * layout = new QVBoxLayout();
+    layout->addWidget(beginAngleGroupBox);
+    layout->addWidget(endAngleGroupBox);
+    layout->addWidget(OKButton);
+
+    setLayout(layout);
 
     setWindowModality(Qt::WindowModal);
+
     show();
 }
 
-int AimDialog::getIndex()
+bool AimDialog::hasBeginPoint()
 {
-    return m_reflectorsComboBox->currentIndex();
+    return m_beginAngleReflectorComboBox->currentIndex() > 0 && m_beginAnglePointComboBox->currentIndex() > 0;
 }
 
-int AimDialog::getChoice()
+QPointF AimDialog::beginPoint()
 {
-    if(m_aimCenterRadioButton->isChecked()) return 0;
-    if(m_aimLeftRadioButton->isChecked()) return 1;
-    if(m_aimRightRadioButton->isChecked()) return 2;
-    if(m_aimBothRadioButton->isChecked()) return 3;
-    return -1;
+    Reflector * reflector = m_reflectors.at(m_beginAngleReflectorComboBox->currentIndex() + 3);
+    switch(m_beginAnglePointComboBox->currentIndex())
+    {
+        case 1: return reflector->leftEdge();
+        case 2: return reflector->pos();
+        case 3: return reflector->rightEdge();
+        default: return QPointF();
+    }
+}
+
+bool AimDialog::hasEndPoint()
+{
+    return m_endAngleReflectorComboBox->currentIndex() > 0 && m_endAnglePointComboBox->currentIndex() > 0;
+}
+
+QPointF AimDialog::endPoint()
+{
+    Reflector * reflector = m_reflectors.at(m_endAngleReflectorComboBox->currentIndex() + 3);
+    switch(m_endAnglePointComboBox->currentIndex())
+    {
+        case 1: return reflector->leftEdge();
+        case 2: return reflector->pos();
+        case 3: return reflector->rightEdge();
+        default: return QPointF();
+    }
 }

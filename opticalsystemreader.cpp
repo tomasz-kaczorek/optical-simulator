@@ -34,6 +34,7 @@ void OpticalSystemReader::readFile(QString filename)
                 if(m_reader.name() == "PlaneMirror") readPlanemirror();
                 else if(m_reader.name() == "ConcaveMirror") readConcaveMirror();
                 else if(m_reader.name() == "DiffractionGrating") readDiffractionGrating();
+                else m_reader.skipCurrentElement();
             }
         }
         if(m_reader.readNextStartElement() && m_reader.name() == "LightSources")
@@ -41,9 +42,11 @@ void OpticalSystemReader::readFile(QString filename)
             while(m_reader.readNextStartElement())
             {
                 if(m_reader.name() == "PointSource") readPointSource();
+                else m_reader.skipCurrentElement();
             }
         }
     }
+    file.close();
 }
 
 void OpticalSystemReader::readPlanemirror()

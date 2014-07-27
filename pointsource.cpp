@@ -4,6 +4,7 @@
 #include "ray.h"
 
 #include <QGraphicsScene>
+#include <qmath.h>
 
 PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active, OpticalSystem * opticalSystem, QGraphicsItem *parent) :
     LightSource(opticalSystem, parent)
@@ -96,7 +97,7 @@ void PointSource::setGeometry(qreal x, qreal y, qreal beginAngle, qreal endAngle
 
 void PointSource::addRay(qreal angle)
 {
-    Ray * ray = new Ray(this, x(), y(), angle);
+    Ray * ray = new Ray(this, x(), y(), 90 - angle);
     m_rays.append(ray);
     m_opticalSystem->scene()->addItem(ray);
 }
