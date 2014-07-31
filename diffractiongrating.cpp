@@ -9,7 +9,10 @@
 #include <QPainter>
 
 DiffractionGrating::DiffractionGrating(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density, OpticalSystem * opticalSystem, QGraphicsItem * parent) :
-    Reflector(opticalSystem, parent)
+    Reflector(opticalSystem, parent),
+    m_radius(radius),
+    m_blazeAngle(blazeAngle),
+    m_density(density)
 {
     prepareGeometryChange();
     addLabel();
@@ -18,16 +21,8 @@ DiffractionGrating::DiffractionGrating(QString name, qreal x, qreal y, qreal ang
     setX(x);
     setY(y);
     setRotation(angle);
-    m_radius = radius;
-    m_blazeAngle = blazeAngle;
-    m_density = density;
-    m_leftEdge = leftEdge();
-    m_rightEdge = rightEdge();
-    m_path = QPainterPath(QPointF(m_radius, 0.0));
-    m_path.lineTo(QPointF(-m_radius, 0.0));
-    m_label->setRotation(rotation());
     m_pen.setStyle(Qt::DotLine);
-    foreach(LightSource * lightSource, m_opticalSystem->lightSources()) lightSource->replot(this);
+    build(true);
 }
 
 DiffractionGrating::~DiffractionGrating()
@@ -40,9 +35,19 @@ qreal DiffractionGrating::radius()  const
     return m_radius;
 }
 
+void DiffractionGrating::setRadius(qreal radius)
+{
+    m_radius = radius;
+}
+
 qreal DiffractionGrating::blazeAngle() const
 {
     return m_blazeAngle;
+}
+
+void DiffractionGrating::setBlazeAngle(qreal blazeAngle)
+{
+    m_blazeAngle = blazeAngle;
 }
 
 qreal DiffractionGrating::density() const
@@ -50,47 +55,45 @@ qreal DiffractionGrating::density() const
     return m_density;
 }
 
-void DiffractionGrating::setGeometry(qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density)
+void DiffractionGrating::setDensity(qreal density)
 {
-    if(this->x() != x || this->y() != y || rotation() != angle || m_radius != radius)
-    {
-        prepareGeometryChange();
-        setX(x);
-        setY(y);
-        setRotation(angle);
-        m_radius = radius;
-        m_blazeAngle = blazeAngle;
-        m_density = density;
-        m_leftEdge = leftEdge();
-        m_rightEdge = rightEdge();
-        m_path = QPainterPath(QPointF(m_radius, 0.0));
-        m_path.lineTo(QPointF(-m_radius, 0.0));
-        m_label->setRotation(rotation());
-        QList<Ray *> temp;
-        temp.swap(m_rays);
-        foreach(Ray * ray, temp) ray->plot();
-        foreach(LightSource * lightSource, m_opticalSystem->lightSources()) lightSource->replot(this);
-    }
-    else if(m_density != density)
-    {
-        bool array[5] = {true, true, false, true, true};
-        foreach(Ray * ray, m_rays) ray->replot(array);
-    }
+    m_density = density;
 }
 
-int DiffractionGrating::type() const
+void DiffractionGrating::build(bool complete)
 {
-    return OpticalDevice::DiffractionGrating;
+    prepareGeometryChange();
+    if(complete)
+    {
+        m_label->setRotation(rotation());
+        m_path = QPainterPath(QPointF(0.0, -m_radius));
+        m_path.lineTo(QPointF(0.0, m_radius));
+        m_leftEdge = leftEdge();
+        m_rightEdge = rightEdge();
+        m_rays.append(nullptr);
+        while(Ray * ray = m_rays.takeFirst()) ray->plot();
+        foreach(LightSource * lightSource, m_opticalSystem->lightSources()) lightSource->replot(this);
+    }
+    else
+    {
+        bool orders[5] = {false, false, true, false, false};
+        m_rays.append(nullptr);
+        while(Ray * ray = m_rays.takeFirst())
+        {
+            ray->replot(orders);
+            m_rays.append(ray);
+        }
+    }
 }
 
 QPointF DiffractionGrating::leftEdge() const
 {
-    return mapToScene(QPointF(-m_radius, 0.0));
+    return mapToScene(QPointF(0.0, -m_radius));
 }
 
 QPointF DiffractionGrating::rightEdge() const
 {
-    return mapToScene(QPointF(m_radius, 0.0));
+    return mapToScene(QPointF(0.0, m_radius));
 }
 
 qreal DiffractionGrating::scalar(Ray const * ray) const
@@ -120,14 +123,14 @@ void DiffractionGrating::reflect(Ray * ray) const
     qreal ry = vector.y1(); //y coordinate of ray starting point
     qreal gx = vector.x2(); //x coordinate of ray-diffraction grating intersection point
     qreal gy = vector.y2(); //y coordinate of ray-diffraction grating intersection point
-    qreal gdx = m_leftEdge.x() - gx; //horizontal component of the line between diffraction grating's edges
-    qreal gdy = m_leftEdge.y() - gy; //vertical component of the line between diffraction grating's edges
+    qreal gdx = m_leftEdge.x() - m_rightEdge.x(); //horizontal component of the line between diffraction grating's edges
+    qreal gdy = m_leftEdge.y() - m_rightEdge.y(); //vertical component of the line between diffraction grating's edges
     //calculate on which side of a diffraction grating does the ray begin
     //if it begins on the back side, return as there will be no reflection
     if(Settings::greaterThanOrEqualZero(gdy * (rx - gx) - gdx * (ry - gy))) return;
     //find a vector (gdx, gdy) perpedicular to diffraction grating surface
-    gdx = -gdy;
-    gdy = m_leftEdge.x() - gx;
+    gdx = m_rightEdge.y() - m_leftEdge.y();
+    gdy = m_leftEdge.x() - m_rightEdge.x();
     //plug: (x = gx + d * gdx) and (y = gy + d * gdy) into distance equation between (rx, ry) and (x, y): sqrt((x - rx) ^ 2 + (y - ry) ^ 2)
     //abandon the root (as it is irrelevant) and minimize result to find projection of (rx, ry) on line perpedicular to diffraction grating's surface
     //parabola's tip is located at d = -b / 2 * a
@@ -184,3 +187,9 @@ void DiffractionGrating::reflect(Ray * ray) const
         }
     }
 }
+
+int DiffractionGrating::type() const
+{
+    return OpticalDevice::DiffractionGrating;
+}
+

@@ -5,8 +5,6 @@
 
 #include <QFile>
 
-#include <QDebug>
-
 OpticalSystemReader::OpticalSystemReader(OpticalSystem * system) :
     m_system(system)
 {

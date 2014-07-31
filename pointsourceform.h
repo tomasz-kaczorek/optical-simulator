@@ -5,6 +5,7 @@
 
 class OpticalDeviceTabWidget;
 class PointSource;
+class PreciseDoubleSpinBox;
 
 class QCheckBox;
 class QDoubleSpinBox;
@@ -18,21 +19,19 @@ class PointSourceForm : public OpticalDeviceForm
 public:
     PointSourceForm(PointSource * pointSource, OpticalDeviceTabWidget * parent = 0);
     ~PointSourceForm();
-
-    QString name();
-private:
-    void apply();
-    void cancel();
-    void changed();
 private slots:
     void aim();
+    void geometry();
+    void reflection();
 private:
+    bool m_geometry;
+    bool m_reflection;
     PointSource * m_pointSource;
     QLineEdit * m_nameLineEdit;
     QDoubleSpinBox * m_xSpinBox;
     QDoubleSpinBox * m_ySpinBox;
-    QDoubleSpinBox * m_beginAngleSpinBox;
-    QDoubleSpinBox * m_endAngleSpinBox;
+    PreciseDoubleSpinBox * m_beginAngleSpinBox;
+    PreciseDoubleSpinBox * m_endAngleSpinBox;
     QSpinBox * m_quantitySpinBox;
     QDoubleSpinBox * m_wavelengthSpinBox;
     QCheckBox * m_activeCheckBox;
@@ -40,6 +39,13 @@ private:
     QPushButton * m_aimButton;
     QPushButton * m_applyButton;
     QPushButton * m_cancelButton;
+
+public: //OpticalDeviceForm
+    QString name();
+private:
+    void apply();
+    void cancel();
+    void changed();
 };
 
 #endif // POINTSOURCEFORM_H

@@ -1,5 +1,6 @@
 #include "pointsource.h"
 
+#include "label.h"
 #include "opticalsystem.h"
 #include "ray.h"
 
@@ -7,28 +8,26 @@
 #include <qmath.h>
 
 PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active, OpticalSystem * opticalSystem, QGraphicsItem *parent) :
-    LightSource(opticalSystem, parent)
+    LightSource(opticalSystem, parent),
+    m_beginAngle(beginAngle),
+    m_endAngle(endAngle),
+    m_quantity(quantity),
+    m_wavelength(wavelength),
+    m_active(active)
 {
     prepareGeometryChange();
     addLabel();
+    setName(name);
+    setX(x);
+    setY(y);
+    setRotation(-90);
+    m_label->setRotation(rotation());
     m_path.moveTo(-5.0, 0.0);
     m_path.lineTo(5.0, 0.0);
     m_path.moveTo(0.0, -5.0);
     m_path.lineTo(0.0, 5.0);
-    setName(name);
-    setX(x);
-    setY(y);
-    m_beginAngle = beginAngle;
-    m_endAngle = endAngle;
-    m_quantity = quantity;
-    m_wavelength = wavelength;
     for(int i = 0; i < 5; ++i) m_orders[i] = orders[i];
-    if((m_active = active))
-    {
-        if(m_quantity == 1) addRay(m_beginAngle);
-        else for (int i = 0; i < m_quantity; ++i) addRay(m_beginAngle + (m_endAngle - m_beginAngle) * i / (m_quantity - 1));
-        plot();
-    }
+    build(true);
 }
 
 PointSource::~PointSource()
@@ -41,9 +40,19 @@ qreal PointSource::beginAngle() const
     return m_beginAngle;
 }
 
+void PointSource::setBeginAngle(qreal beginAngle)
+{
+    m_beginAngle = beginAngle;
+}
+
 qreal PointSource::endAngle() const
 {
     return m_endAngle;
+}
+
+void PointSource::setEndAngle(qreal endAngle)
+{
+    m_endAngle = endAngle;
 }
 
 int PointSource::quantity() const
@@ -51,45 +60,54 @@ int PointSource::quantity() const
     return m_quantity;
 }
 
+void PointSource::setQuantity(int quantity)
+{
+    m_quantity = quantity;
+}
+
+void PointSource::setWavelength(qreal wavelength)
+{
+    m_wavelength = wavelength;
+}
+
+void PointSource::setOrder(int order, bool visible)
+{
+    m_orders[order + 2] = visible;
+}
+
 bool PointSource::active() const
 {
     return m_active;
 }
 
-void PointSource::setGeometry(qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active)
+void PointSource::setActive(bool active)
 {
-    if(this->x() != x || this->y() != y || m_beginAngle != beginAngle || m_endAngle != endAngle || m_quantity != quantity || m_active != active)
+    m_active = active;
+}
+
+void PointSource::build(bool complete)
+{
+    prepareGeometryChange();
+    if(complete)
     {
-        prepareGeometryChange();
-        setX(x);
-        setY(y);
-        m_beginAngle = beginAngle;
-        m_endAngle = endAngle;
-        m_quantity = quantity;
-        m_wavelength = wavelength;
-        for(int i = 0; i < 5; ++i) m_orders[i] = orders[i];
         qDeleteAll(m_rays);
         m_rays.clear();
-        if((m_active = active))
+        if(m_active)
         {
             if(m_quantity == 1) addRay(m_beginAngle);
-            else for(int i = 0; i < m_quantity; ++i) addRay(m_beginAngle + (m_endAngle - m_beginAngle) * i / (m_quantity - 1));
-            plot();
+            else
+            {
+                qreal spanAngle = (m_endAngle - m_beginAngle) > 0.0 ? m_endAngle - m_beginAngle : 360.0 + m_endAngle - m_beginAngle;
+                for(int i = 0; i < m_quantity; ++i) addRay(m_beginAngle + spanAngle * i / (m_quantity - 1));
+            }
+            foreach(Ray * ray, m_rays) ray->plot();
         }
     }
     else
     {
-        prepareGeometryChange();
-        setX(x);
-        setY(y);
-        m_beginAngle = beginAngle;
-        m_endAngle = endAngle;
-        m_quantity = quantity;
-        m_wavelength = wavelength;
-        for(int i = 0; i < 5; ++i) m_orders[i] = orders[i];
-        bool array[5] = {false, false, m_orders[2], false, false};
-        if((m_active = active))
+        if(m_active)
         {
+            bool array[5] = {false, false, m_orders[2], false, false};
             foreach(Ray * ray, m_rays) ray->replot(array);
         }
     }
@@ -97,14 +115,9 @@ void PointSource::setGeometry(qreal x, qreal y, qreal beginAngle, qreal endAngle
 
 void PointSource::addRay(qreal angle)
 {
-    Ray * ray = new Ray(this, x(), y(), 90 - angle);
+    Ray * ray = new Ray(this, x(), y(), angle);
     m_rays.append(ray);
     m_opticalSystem->scene()->addItem(ray);
-}
-
-int PointSource::type() const
-{
-    return OpticalDevice::PointSource;
 }
 
 qreal PointSource::wavelength() const
@@ -168,4 +181,9 @@ void PointSource::replot(bool orders[])
 void PointSource::replot(Reflector * reflector)
 {
     foreach(Ray * ray, m_rays) ray->replot(reflector);
+}
+
+int PointSource::type() const
+{
+    return OpticalDevice::PointSource;
 }

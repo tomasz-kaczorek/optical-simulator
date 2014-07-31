@@ -17,7 +17,7 @@ void Label::setRotation(qreal angle)
 {
     prepareGeometryChange();
     //recalculates cosinusoidal adjustment to the distance between label and parent item
-    m_adjustment = -qFabs(qSin(angle * M_PI / 180.0));
+    m_adjustment = -qFabs(qCos(angle * M_PI / 180.0));
 }
 
 QRectF Label::boundingRect() const
@@ -31,7 +31,7 @@ QRectF Label::boundingRect() const
 void Label::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
     //ensure regular distance between label and parent item
-    setY(-m_adjustment * QGraphicsSimpleTextItem::boundingRect().width() / 2.0 + 10.0);
+    setX(m_adjustment * QGraphicsSimpleTextItem::boundingRect().width() / 2.0 - 10.0);
     //begin painting in the center of label
     painter->translate(-boundingRect().width() / 2.0, -boundingRect().height() / 2.0);
     QGraphicsSimpleTextItem::paint(painter, option, widget);

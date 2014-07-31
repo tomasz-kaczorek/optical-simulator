@@ -12,16 +12,14 @@ class QPushButton;
 
 class ConcaveMirrorForm : public OpticalDeviceForm
 {
+    Q_OBJECT
 public:
     explicit ConcaveMirrorForm(ConcaveMirror *ConcaveMirror, OpticalDeviceTabWidget *parent = 0);
     ~ConcaveMirrorForm();
-
-    QString name();
+private slots:
+    void geometry();
 private:
-    void apply();
-    void cancel();
-    void changed();
-
+    bool m_geometry;
     ConcaveMirror * m_concaveMirror;
     QLineEdit * m_nameLineEdit;
     QDoubleSpinBox * m_xSpinBox;
@@ -31,6 +29,13 @@ private:
     QDoubleSpinBox * m_focalLengthSpinBox;
     QPushButton * m_applyButton;
     QPushButton * m_cancelButton;
+
+public: //OpticalDeviceForm
+    QString name() override;
+private:
+    void apply() override;
+    void cancel() override;
+    void changed() override;
 };
 
 #endif // CONCAVEMIRRORFORM_H

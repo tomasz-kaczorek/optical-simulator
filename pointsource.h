@@ -12,22 +12,25 @@ public:
     ~PointSource();
 
     qreal beginAngle() const;
-    qreal endAngle() const;
-    int quantity() const;
-    bool active() const;
-    void setGeometry(qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active);
+    void setBeginAngle(qreal beginAngle);
 
+    qreal endAngle() const;
+    void setEndAngle(qreal endAngle);
+
+    int quantity() const;
+    void setQuantity(int quantity);
+
+    void setWavelength(qreal wavelength);
+
+    void setOrder(int order, bool visible);
+
+    bool active() const;
+    void setActive(bool active);
+
+    void build(bool complete);
+private:
     void addRay(qreal angle);
 
-    int type() const;
-
-    qreal wavelength() const;
-    QColor color() const;
-    bool order(int order) const;
-    void plot();
-    void replot(bool orders[5]);
-    void replot(Reflector * reflector);
-private:
     qreal m_beginAngle;
     qreal m_endAngle;
     int m_quantity;
@@ -36,5 +39,15 @@ private:
     bool m_orders[5];
     bool m_active;
     QList<Ray *> m_rays;
+
+public: //LightSource
+    qreal wavelength() const override;
+    QColor color() const override;
+    bool order(int order) const override;
+    void plot() override;
+    void replot(bool orders[5]) override;
+    void replot(Reflector * reflector) override;
+public: //OpticalDevice
+    int type() const override;
 };
 #endif // POINTSOURCE_H

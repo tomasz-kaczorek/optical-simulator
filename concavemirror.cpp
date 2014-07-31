@@ -8,9 +8,10 @@
 #include <qmath.h>
 #include <QPainter>
 
-
 ConcaveMirror::ConcaveMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal focalLength, OpticalSystem * opticalSystem, QGraphicsItem * parent) :
-    Reflector(opticalSystem, parent)
+    Reflector(opticalSystem, parent),
+    m_radius(radius),
+    m_focalLength(focalLength)
 {
     prepareGeometryChange();
     addLabel();
@@ -19,21 +20,13 @@ ConcaveMirror::ConcaveMirror(QString name, qreal x, qreal y, qreal angle, qreal 
     setX(x);
     setY(y);
     setRotation(angle);
-    m_radius = radius;
-    m_focalLength = focalLength;
-    m_angularRadius = focalLength > 0.0 ? qAsin(m_radius / 2.0 / m_focalLength) : M_PI;
-    m_circleCenter = mapToScene(QPointF(0.0, -2.0 * m_focalLength));
-    m_leftEdge = leftEdge();
-    m_rightEdge = rightEdge();
-    m_path = QPainterPath(QPointF(m_radius, -2.0 * m_focalLength * (1.0 - qCos(m_angularRadius))));
-    m_path.arcTo(-2.0 * m_focalLength, -4.0 * m_focalLength, 4.0 * m_focalLength, 4.0 * m_focalLength, 180 * (-0.5 + m_angularRadius / M_PI ), -2 * 180 * m_angularRadius / M_PI);
-    m_label->setRotation(rotation());
-    foreach(LightSource * lightSource, m_opticalSystem->lightSources()) lightSource->replot(this);
+    build();
 }
 
 ConcaveMirror::~ConcaveMirror()
 {
-    foreach(Ray * ray, m_rays) ray->plot();
+    m_rays.append(nullptr);
+    while(Ray * ray = m_rays.takeFirst()) ray->plot();
 }
 
 qreal ConcaveMirror::radius() const
@@ -41,48 +34,44 @@ qreal ConcaveMirror::radius() const
     return m_radius;
 }
 
+void ConcaveMirror::setRadius(qreal radius)
+{
+    m_radius = radius;
+}
+
 qreal ConcaveMirror::focalLength() const
 {
     return m_focalLength;
 }
 
-void ConcaveMirror::setGeometry(qreal x, qreal y, qreal angle, qreal radius, qreal focalLength)
+void ConcaveMirror::setFocalLength(qreal focalLength)
 {
-    if(this->x() != x || this->y() != y || rotation() != angle || m_radius != radius || m_focalLength != focalLength)
-    {
-        prepareGeometryChange();
-        setX(x);
-        setY(y);
-        setRotation(angle);
-        m_radius = radius;
-        m_focalLength = focalLength;
-        m_angularRadius = focalLength > 0.0 ? qAsin(m_radius / 2.0 / m_focalLength) : M_PI;
-        m_circleCenter = mapToScene(QPointF(0.0, -2.0 * m_focalLength));
-        m_leftEdge = leftEdge();
-        m_rightEdge = rightEdge();
-        m_path = QPainterPath(QPointF(m_radius, -2.0 * m_focalLength * (1.0 - qCos(m_angularRadius))));
-        m_path.arcTo(-2.0 * m_focalLength, -4.0 * m_focalLength, 4.0 * m_focalLength, 4.0 * m_focalLength, 180 * (-0.5 + m_angularRadius / M_PI ), -2 * 180 * m_angularRadius / M_PI);
-        m_label->setRotation(rotation());
-        QList<Ray *> temp;
-        temp.swap(m_rays);
-        foreach(Ray * ray, temp) ray->plot();
-        foreach(LightSource * lightSource, m_opticalSystem->lightSources()) lightSource->replot(this);
-    }
+    m_focalLength = focalLength;
 }
 
-int ConcaveMirror::type() const
+void ConcaveMirror::build()
 {
-    return OpticalDevice::ConcaveMirror;
+    prepareGeometryChange();
+    m_label->setRotation(rotation());
+    m_angularRadius = m_focalLength > 0.0 ? qAsin(m_radius / 2.0 / m_focalLength) : M_PI;
+    m_path = QPainterPath(QPointF(2.0 * m_focalLength * (1.0 - qCos(m_angularRadius)), -m_radius));
+    m_path.arcTo(0.0, -2.0 * m_focalLength, 4.0 * m_focalLength, 4.0 * m_focalLength, 180 * (1.0 - m_angularRadius / M_PI ), 2 * 180 * m_angularRadius / M_PI);
+    m_circleCenter = mapToScene(QPointF(2.0 * m_focalLength, 0.0));
+    m_leftEdge = leftEdge();
+    m_rightEdge = rightEdge();
+    m_rays.append(nullptr);
+    while(Ray * ray = m_rays.takeFirst()) ray->plot();
+    foreach(LightSource * lightSource, m_opticalSystem->lightSources()) lightSource->replot(this);
 }
 
 QPointF ConcaveMirror::leftEdge() const
 {
-    return mapToScene(QPointF(-m_radius, -2.0 * m_focalLength * (1.0 - qCos(m_angularRadius))));
+    return mapToScene(QPointF(2.0 * m_focalLength * (1.0 - qCos(m_angularRadius)), -m_radius));
 }
 
 QPointF ConcaveMirror::rightEdge() const
 {
-    return mapToScene(QPointF(m_radius, -2.0 * m_focalLength * (1.0 - qCos(m_angularRadius))));
+    return mapToScene(QPointF(2.0 * m_focalLength * (1.0 - qCos(m_angularRadius)), m_radius));
 }
 
 qreal ConcaveMirror::scalar(Ray const * ray) const
@@ -139,4 +128,9 @@ void ConcaveMirror::reflect(Ray * ray) const
     //reflection ray's heading is located twice as far from (rx, ry) as (x, y)
     //(result) = (x, y) + ((x, y) - (rx, ry)) = 2 * (x, y) - (rx, ry)
     ray->append(2.0 * (mx + d * mdx) - rx, 2.0 * (my + d * mdy) - ry);
+}
+
+int ConcaveMirror::type() const
+{
+    return OpticalDevice::ConcaveMirror;
 }

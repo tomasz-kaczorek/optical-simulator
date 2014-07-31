@@ -9,7 +9,8 @@
 #include <QPainterPath>
 
 PlaneMirror::PlaneMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, OpticalSystem * opticalSystem, QGraphicsItem * parent) :
-    Reflector(opticalSystem, parent)
+    Reflector(opticalSystem, parent),
+    m_radius(radius)
 {
     prepareGeometryChange();
     addLabel();
@@ -18,18 +19,13 @@ PlaneMirror::PlaneMirror(QString name, qreal x, qreal y, qreal angle, qreal radi
     setX(x);
     setY(y);
     setRotation(angle);
-    m_radius = radius;
-    m_leftEdge = leftEdge();
-    m_rightEdge = rightEdge();
-    m_path = QPainterPath(QPointF(m_radius, 0.0));
-    m_path.lineTo(QPointF(-m_radius, 0.0));
-    m_label->setRotation(rotation());
-    foreach(LightSource * lightSource, m_opticalSystem->lightSources()) lightSource->replot(this);
+    build();
 }
 
 PlaneMirror::~PlaneMirror()
 {
-    foreach(Ray * ray, m_rays) ray->plot();
+    m_rays.append(nullptr);
+    while(Ray * ray = m_rays.takeFirst()) ray->plot();
 }
 
 qreal PlaneMirror::radius()  const
@@ -37,40 +33,32 @@ qreal PlaneMirror::radius()  const
     return m_radius;
 }
 
-void PlaneMirror::setGeometry(qreal x, qreal y, qreal angle, qreal radius)
+void PlaneMirror::setRadius(qreal radius)
 {
-    if(this->x() != x || this->y() != y || rotation() != angle || m_radius != radius)
-    {
-        prepareGeometryChange();
-        setX(x);
-        setY(y);
-        setRotation(angle);
-        m_radius = radius;
-        m_leftEdge = leftEdge();
-        m_rightEdge = rightEdge();
-        m_path = QPainterPath(QPointF(m_radius, 0.0));
-        m_path.lineTo(QPointF(-m_radius, 0.0));
-        m_label->setRotation(rotation());
-        QList<Ray *> temp;
-        temp.swap(m_rays);
-        foreach(Ray * ray, temp) ray->plot();
-        foreach(LightSource * lightSource, m_opticalSystem->lightSources()) lightSource->replot(this);
-    }
+    m_radius = radius;
 }
 
-int PlaneMirror::type() const
+void PlaneMirror::build()
 {
-    return OpticalDevice::PlaneMirror;
+    prepareGeometryChange();
+    m_label->setRotation(rotation());
+    m_path = QPainterPath(QPointF(0.0, -m_radius));
+    m_path.lineTo(QPointF(0.0, m_radius));
+    m_leftEdge = leftEdge();
+    m_rightEdge = rightEdge();
+    m_rays.append(nullptr);
+    while(Ray * ray = m_rays.takeFirst()) ray->plot();
+    foreach(LightSource * lightSource, m_opticalSystem->lightSources()) lightSource->replot(this);
 }
 
 QPointF PlaneMirror::leftEdge() const
 {
-    return mapToScene(QPointF(-m_radius, 0.0));
+    return mapToScene(QPointF(0.0, -m_radius));
 }
 
 QPointF PlaneMirror::rightEdge() const
 {
-    return mapToScene(QPointF(m_radius, 0.0));
+    return mapToScene(QPointF(0.0, m_radius));
 }
 
 qreal PlaneMirror::scalar(Ray const * ray) const
@@ -100,14 +88,14 @@ void PlaneMirror::reflect(Ray * ray) const
     qreal ry = vector.y1(); //y coordinate of ray starting point
     qreal mx = vector.x2(); //x coordinate of ray-mirror intersection point
     qreal my = vector.y2(); //y coordinate of ray-mirror intersection point
-    qreal mdx = m_leftEdge.x() - mx; //horizontal component of the line between mirror's edges
-    qreal mdy = m_leftEdge.y() - my; //vertical component of the line between mirror's edges
+    qreal mdx = m_leftEdge.x() - m_rightEdge.x(); //horizontal component of the line between mirror's edges
+    qreal mdy = m_leftEdge.y() - m_rightEdge.y(); //vertical component of the line between mirror's edges
     //calculate on which side of a mirror does the ray begin
     //if it begins on the back side, return as there will be no reflection
     if(Settings::greaterThanOrEqualZero(mdy * (rx - mx) - mdx * (ry - my))) return;
     //find a vector (mdx, mdy) perpedicular to mirror surface
-    mdx = -mdy;
-    mdy = m_leftEdge.x() - mx;
+    mdx = m_rightEdge.y() - m_leftEdge.y();
+    mdy = m_leftEdge.x() - m_rightEdge.x();
     //plug: (x = mx + d * mdx) and (y = my + d * mdy) into distance equation between (rx, ry) and (x, y): sqrt((x - rx) ^ 2 + (y - ry) ^ 2)
     //abandon the root (as it is irrelevant) and minimize result to find projection of (rx, ry) on line perpedicular to mirror's surface
     //parabola's tip is located at d = -b / 2 * a
@@ -117,3 +105,7 @@ void PlaneMirror::reflect(Ray * ray) const
     ray->append(2.0 * (mx + d * mdx) - rx, 2.0 * (my + d * mdy) - ry);
 }
 
+int PlaneMirror::type() const
+{
+    return OpticalDevice::PlaneMirror;
+}

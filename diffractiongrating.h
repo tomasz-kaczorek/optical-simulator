@@ -10,23 +10,31 @@ public:
     ~DiffractionGrating();
 
     qreal radius() const;
+    void setRadius(qreal radius);
+
     qreal blazeAngle() const;
+    void setBlazeAngle(qreal blazeAngle);
+
     qreal density() const;
-    void setGeometry(qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density);
+    void setDensity(qreal density);
 
-    int type() const;
-
-    QPointF leftEdge() const;
-    QPointF rightEdge() const;
-
-    qreal scalar(Ray const * ray) const;
-    void reflect(Ray * ray) const;
+    void build(bool complete);
 private:
     qreal m_radius;
     qreal m_blazeAngle;
     qreal m_density;
     QPointF m_leftEdge;
     QPointF m_rightEdge;
+
+public: //Reflector
+    QPointF leftEdge() const override;
+    QPointF rightEdge() const override;
+
+    qreal scalar(Ray const * ray) const override;
+    void reflect(Ray * ray) const override;
+
+public: //OpticalDevice
+    int type() const override;
 };
 
 #endif // DIFFRACTIONGRATING_H

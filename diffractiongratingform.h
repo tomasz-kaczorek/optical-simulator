@@ -12,16 +12,16 @@ class QPushButton;
 
 class DiffractionGratingForm : public OpticalDeviceForm
 {
+    Q_OBJECT
 public:
     explicit DiffractionGratingForm(DiffractionGrating * diffractionGrating, OpticalDeviceTabWidget * parent = 0);
     ~DiffractionGratingForm();
-
-    QString name();
+private slots:
+    void geometry();
+    void reflection();
 private:
-    void apply();
-    void cancel();
-    void changed();
-
+    bool m_geometry;
+    bool m_reflection;
     DiffractionGrating * m_diffractionGrating;
     QLineEdit * m_nameLineEdit;
     QDoubleSpinBox * m_xSpinBox;
@@ -32,6 +32,13 @@ private:
     QDoubleSpinBox * m_densitySpinBox;
     QPushButton * m_applyButton;
     QPushButton * m_cancelButton;
+
+public: //OpticalDeviceForm
+    QString name() override;
+private:
+    void apply() override;
+    void cancel() override;
+    void changed() override;
 };
 
 #endif // DIFFRACTIONGRATINGFORM_H

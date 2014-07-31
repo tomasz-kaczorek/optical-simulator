@@ -5,24 +5,28 @@
 
 class PlaneMirror : public Reflector
 {
-public:   
-    PlaneMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
+public:
+    PlaneMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);    
     ~PlaneMirror();
 
     qreal radius() const;
-    void setGeometry(qreal x, qreal y, qreal angle, qreal radius);
+    void setRadius(qreal radius);
 
-    int type() const;
-
-    QPointF leftEdge() const;
-    QPointF rightEdge() const;
-
-    qreal scalar(Ray const * ray) const;
-    void reflect(Ray * ray) const;
+    void build();
 private:
     qreal m_radius;
     QPointF m_leftEdge;
     QPointF m_rightEdge;
+
+public: //Reflector
+    QPointF leftEdge() const override;
+    QPointF rightEdge() const override;
+
+    qreal scalar(Ray const * ray) const override;
+    void reflect(Ray * ray) const override;
+
+public: //OpticalDevice
+    int type() const override;
 };
 
 #endif // PLANEMIRROR_H

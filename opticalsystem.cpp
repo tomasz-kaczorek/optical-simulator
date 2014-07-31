@@ -69,15 +69,12 @@ void OpticalSystem::newScene()
 {
     if(m_reflectors.count() > 0)
     {
-        delete m_reflectors.takeFirst();
-        delete m_reflectors.takeFirst();
-        delete m_reflectors.takeFirst();
-        delete m_reflectors.takeFirst();
-        m_scene->clear();
-        m_reflectors.clear();
+        qDeleteAll(m_lightSources);
         m_lightSources.clear();
-        m_reflectorsTabs->removeAllTabs();
         m_lightSourcesTabs->removeAllTabs();
+        qDeleteAll(m_reflectors);
+        m_reflectors.clear();
+        m_reflectorsTabs->removeAllTabs();
     }
     m_reflectors.append(new Absorber(Settings::minX - 1.0, Settings::minY - 1.0, Settings::minX - 1.0, Settings::maxY - 1.0, this));
     m_reflectors.append(new Absorber(Settings::minX - 1.0, Settings::maxY + 1.0, Settings::maxX + 1.0, Settings::maxY + 1.0, this));

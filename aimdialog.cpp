@@ -41,7 +41,7 @@ AimDialog::AimDialog(OpticalDevice * opticalDevice, QWidget * parent) :
     m_endAngleReflectorComboBox = new QComboBox();
     m_endAngleReflectorComboBox->addItems(names);
 
-    QGroupBox * beginAngleGroupBox = new QGroupBox("Angle #1");
+    QGroupBox * beginAngleGroupBox = new QGroupBox("Begin Angle");
     beginAngleGroupBox->setStyle(new QPlastiqueStyle());
 
     QHBoxLayout * beginAngleLayout = new QHBoxLayout();
@@ -51,7 +51,7 @@ AimDialog::AimDialog(OpticalDevice * opticalDevice, QWidget * parent) :
     beginAngleLayout->addWidget(new QLabel(" of "));
     beginAngleLayout->addWidget(m_beginAngleReflectorComboBox);
 
-    QGroupBox * endAngleGroupBox = new QGroupBox("Angle #2");
+    QGroupBox * endAngleGroupBox = new QGroupBox("End Angle");
     endAngleGroupBox->setStyle(new QPlastiqueStyle());
 
     QHBoxLayout * endAngleLayout = new QHBoxLayout();
