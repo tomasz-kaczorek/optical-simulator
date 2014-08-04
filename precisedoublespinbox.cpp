@@ -6,7 +6,8 @@
 #include <QLocale>
 
 PreciseDoubleSpinBox::PreciseDoubleSpinBox(QWidget *parent) :
-    QDoubleSpinBox(parent)
+    QDoubleSpinBox(parent),
+    m_precision(Settings::decimals)
 {
     QDoubleSpinBox::setDecimals(DBL_MAX_10_EXP + DBL_DIG);
 }

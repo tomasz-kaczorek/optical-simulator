@@ -45,6 +45,7 @@ void MainWindow::buildToolbar()
     toolbar->addAction("Add Plane Mirror", this, SLOT(addPlaneMirror()));
     toolbar->addAction("Add Concave Mirror", this, SLOT(addConcaveMirror()));
     toolbar->addAction("Add Diffraction Grating", this, SLOT(addDiffractionGrating()));
+    toolbar->addAction("Add Slit", this, SLOT(addSlit()));
     toolbar->addAction("Add Light Source", this, SLOT(addLightSource()));
     toolbar->addSeparator();
     toolbar->addAction("Remove Reflector", this, SLOT(removeReflector()));
@@ -115,6 +116,11 @@ void MainWindow::addConcaveMirror()
 void MainWindow::addDiffractionGrating()
 {
     m_system->addDiffractionGrating();
+}
+
+void MainWindow::addSlit()
+{
+    m_system->addSlit();
 }
 
 void MainWindow::addLightSource()

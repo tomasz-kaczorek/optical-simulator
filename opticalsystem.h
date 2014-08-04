@@ -30,6 +30,8 @@ public:
     void addConcaveMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal focalLength);
     void addDiffractionGrating();
     void addDiffractionGrating(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density);
+    void addSlit();
+    void addSlit(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal slitRadius);
     void removeReflector();
 
     void addPointSource();

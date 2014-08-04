@@ -14,6 +14,7 @@ private:
     void readPlanemirror();
     void readConcaveMirror();
     void readDiffractionGrating();
+    void readSlit();
     void readPointSource();
 
     QXmlStreamReader m_reader;

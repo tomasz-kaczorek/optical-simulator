@@ -5,15 +5,17 @@
 #include "concavemirrorform.h"
 #include "diffractiongrating.h"
 #include "diffractiongratingform.h"
-#include "pointsource.h"
-#include "pointsourceform.h"
 #include "opticaldevicetabwidget.h"
 #include "opticalsystemreader.h"
 #include "opticalsystemwriter.h"
 #include "planemirror.h"
 #include "planemirrorform.h"
+#include "pointsource.h"
+#include "pointsourceform.h"
 #include "reflector.h"
 #include "settings.h"
+#include "slit.h"
+#include "slitform.h"
 
 #include <QDockWidget>
 #include <QFile>
@@ -47,10 +49,8 @@ OpticalSystem::OpticalSystem(QMainWindow * parent) :
 
 OpticalSystem::~OpticalSystem()
 {
-    delete m_reflectors.takeFirst();
-    delete m_reflectors.takeFirst();
-    delete m_reflectors.takeFirst();
-    delete m_reflectors.takeFirst();
+    qDeleteAll(m_lightSources);
+    qDeleteAll(m_reflectors);
 }
 
 void OpticalSystem::open()
@@ -125,6 +125,21 @@ void OpticalSystem::addDiffractionGrating(QString name, qreal x, qreal y, qreal 
 
     DiffractionGratingForm * diffractionGratingForm = new DiffractionGratingForm(diffractionGrating, m_reflectorsTabs);
     m_reflectorsTabs->addTab(diffractionGratingForm);
+}
+
+void OpticalSystem::addSlit()
+{
+    addSlit("Slit", Settings::minX, Settings::minY, 0.0, Settings::minRadius, 0.0);
+}
+
+void OpticalSystem::addSlit(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal slitRadius)
+{
+    Slit * slit = new Slit(name, x, y, angle, radius, slitRadius, this);
+    m_scene->addItem(slit);
+    m_reflectors.append(slit);
+
+    SlitForm * slitForm = new SlitForm(slit, m_reflectorsTabs);
+    m_reflectorsTabs->addTab(slitForm);
 }
 
 void OpticalSystem::removeReflector()

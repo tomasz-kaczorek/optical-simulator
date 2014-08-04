@@ -1,31 +1,32 @@
-#ifndef PLANEMIRRORFORM_H
-#define PLANEMIRRORFORM_H
+#ifndef SLITFORM_H
+#define SLITFORM_H
 
 #include "opticaldeviceform.h"
 
 class OpticalDeviceTabWidget;
-class PlaneMirror;
+class Slit;
 
 class QDoubleSpinBox;
 class QLineEdit;
 class QPushButton;
 
-class PlaneMirrorForm : public OpticalDeviceForm
+class SlitForm : public OpticalDeviceForm
 {
     Q_OBJECT
 public:
-    explicit PlaneMirrorForm(PlaneMirror * planeMirror, OpticalDeviceTabWidget * parent = 0);
-    ~PlaneMirrorForm();
+    explicit SlitForm(Slit * slit, OpticalDeviceTabWidget * parent = 0);
+    ~SlitForm();
 private slots:
     void geometry();
 private:
     bool m_geometry;
-    PlaneMirror * m_planeMirror;
+    Slit * m_slit;
     QLineEdit * m_nameLineEdit;
     QDoubleSpinBox * m_xSpinBox;
     QDoubleSpinBox * m_ySpinBox;
     QDoubleSpinBox * m_angleSpinBox;
     QDoubleSpinBox * m_radiusSpinBox;
+    QDoubleSpinBox * m_slitRadiusSpinBox;
     QPushButton * m_applyButton;
     QPushButton * m_cancelButton;
 
@@ -36,4 +37,5 @@ private:
     void cancel() override;
     void changed() override;
 };
-#endif // PLANEMIRRORFORM_H
+
+#endif // SLITFORM_H

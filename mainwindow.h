@@ -27,6 +27,7 @@ public slots:
     void addPlaneMirror();
     void addConcaveMirror();
     void addDiffractionGrating();
+    void addSlit();
     void addLightSource();
     void removeReflector();
     void removeLightSource();

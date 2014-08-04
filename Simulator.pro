@@ -36,7 +36,9 @@ SOURCES += main.cpp\
     pointsourceform.cpp \
     opticalsystemwriter.cpp \
     opticalsystemreader.cpp \
-    precisedoublespinbox.cpp
+    precisedoublespinbox.cpp \
+    slit.cpp \
+    slitform.cpp
 
 HEADERS  += mainwindow.h \
     planemirror.h \
@@ -61,4 +63,6 @@ HEADERS  += mainwindow.h \
     pointsourceform.h \
     opticalsystemwriter.h \
     opticalsystemreader.h \
-    precisedoublespinbox.h
+    precisedoublespinbox.h \
+    slit.h \
+    slitform.h

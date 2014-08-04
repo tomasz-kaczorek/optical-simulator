@@ -6,6 +6,7 @@
 #include "planemirror.h"
 #include "pointsource.h"
 #include "settings.h"
+#include "slit.h"
 
 #include <QFile>
 
@@ -41,6 +42,10 @@ void OpticalSystemWriter::writeFile(QString filename)
         else if(reflector->type() == OpticalDevice::DiffractionGrating)
         {
             writeDiffractionGrating(static_cast<DiffractionGrating *>(reflector));
+        }
+        else if(reflector->type() == OpticalDevice::Slit)
+        {
+            writeSlit(static_cast<Slit *>(reflector));
         }
     }
     m_writer.writeEndElement();
@@ -90,6 +95,18 @@ void OpticalSystemWriter::writeDiffractionGrating(DiffractionGrating * item)
     m_writer.writeTextElement("Radius", QString::number(item->radius()));
     m_writer.writeTextElement("BlazeAngle", QString::number(item->blazeAngle()));
     m_writer.writeTextElement("Density", QString::number(item->density()));
+    m_writer.writeEndElement();
+}
+
+void OpticalSystemWriter::writeSlit(Slit * item)
+{
+    m_writer.writeStartElement("Slit");
+    m_writer.writeTextElement("Name", item->name());
+    m_writer.writeTextElement("X", QString::number(item->x()));
+    m_writer.writeTextElement("Y", QString::number(item->y()));
+    m_writer.writeTextElement("Angle", QString::number(item->rotation()));
+    m_writer.writeTextElement("Radius", QString::number(item->radius()));
+    m_writer.writeTextElement("SlitRadius", QString::number(item->slitRadius()));
     m_writer.writeEndElement();
 }
 
