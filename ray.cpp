@@ -29,6 +29,7 @@ Ray::Ray(LightSource * lightSource, qreal x1, qreal y1, qreal angle, unsigned in
     line.setAngle(angle);
     setLine(line);
     setPen(QPen(QBrush(m_lightSource->color()), 0.0, style));
+    setZValue(wavelength());
 }
 
 Ray::~Ray()
