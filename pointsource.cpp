@@ -26,6 +26,7 @@ PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal
     m_path.lineTo(5.0, 0.0);
     m_path.moveTo(0.0, -5.0);
     m_path.lineTo(0.0, 5.0);
+    m_color = RGB();
     for(int i = 0; i < 5; ++i) m_orders[i] = orders[i];
     build(true);
 }
@@ -68,6 +69,7 @@ void PointSource::setQuantity(int quantity)
 void PointSource::setWavelength(qreal wavelength)
 {
     m_wavelength = wavelength;
+    m_color = RGB();
 }
 
 void PointSource::setOrder(int order, bool visible)
@@ -113,19 +115,7 @@ void PointSource::build(bool complete)
     }
 }
 
-void PointSource::addRay(qreal angle)
-{
-    Ray * ray = new Ray(this, x(), y(), angle);
-    m_rays.append(ray);
-    m_opticalSystem->scene()->addItem(ray);
-}
-
-qreal PointSource::wavelength() const
-{
-    return m_wavelength;
-}
-
-QColor PointSource::color() const
+QColor PointSource::RGB()
 {
     qreal R, G, B;
 
@@ -160,7 +150,24 @@ QColor PointSource::color() const
     }
     else R = G = B = 0.0;
 
-    return QColor(R, G, B, 255.0);
+    return QColor(R, G, B);
+}
+
+void PointSource::addRay(qreal angle)
+{
+    Ray * ray = new Ray(this, x(), y(), angle);
+    m_rays.append(ray);
+    m_opticalSystem->scene()->addItem(ray);
+}
+
+qreal PointSource::wavelength() const
+{
+    return m_wavelength;
+}
+
+QColor PointSource::color() const
+{
+    return m_color;
 }
 
 bool PointSource::order(int order) const

@@ -15,6 +15,7 @@ Ray::Ray(LightSource * lightSource, qreal x1, qreal y1, qreal x2, qreal y2, unsi
     m_reflector(nullptr)
 {
     setPen(QPen(QBrush(m_lightSource->color()), 0.0, style));
+    setZValue(wavelength());
 }
 
 Ray::Ray(LightSource * lightSource, qreal x1, qreal y1, qreal angle, unsigned int recursionDepth, Qt::PenStyle style, QGraphicsItem * parent) :
@@ -92,6 +93,7 @@ void Ray::replot(bool orders[5])
         QPen newpen = pen();
         newpen.setColor(m_lightSource->color());
         setPen(newpen);
+        setZValue(wavelength());
     }
     for(int i = 0; i < 5; ++i)
     {

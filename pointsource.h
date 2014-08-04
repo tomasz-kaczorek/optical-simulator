@@ -28,6 +28,7 @@ public:
     void setActive(bool active);
 
     void build(bool complete);
+    QColor RGB();
 private:
     void addRay(qreal angle);
 
