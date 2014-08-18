@@ -7,7 +7,6 @@
 #include "settings.h"
 
 #include <QCheckBox>
-#include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QLabel>
@@ -24,28 +23,33 @@ PointSourceForm::PointSourceForm(PointSource * pointSource, OpticalDeviceTabWidg
 {
     m_nameLineEdit = new QLineEdit();
 
-    m_xSpinBox = new QDoubleSpinBox();
+    m_xSpinBox = new PreciseDoubleSpinBox();
     m_xSpinBox->setDecimals(Settings::decimals);
     m_xSpinBox->setRange(Settings::minX, Settings::maxX);
+    m_xSpinBox->setSuffix(" mm");
 
-    m_ySpinBox = new QDoubleSpinBox();
+    m_ySpinBox = new PreciseDoubleSpinBox();
     m_ySpinBox->setDecimals(Settings::decimals);
     m_ySpinBox->setRange(Settings::minY, Settings::maxY);
+    m_ySpinBox->setSuffix(" mm");
 
     m_beginAngleSpinBox = new PreciseDoubleSpinBox();
     m_beginAngleSpinBox->setDecimals(Settings::decimals);
     m_beginAngleSpinBox->setRange(Settings::minAngle, Settings::maxAngle);
+    m_beginAngleSpinBox->setSuffix("\260");
 
     m_endAngleSpinBox = new PreciseDoubleSpinBox();
     m_endAngleSpinBox->setDecimals(Settings::decimals);
     m_endAngleSpinBox->setRange(Settings::minAngle, Settings::maxAngle);
+    m_endAngleSpinBox->setSuffix("\260");
 
     m_quantitySpinBox = new QSpinBox();
     m_quantitySpinBox->setRange(Settings::minQuantity, Settings::maxQuantity);
 
-    m_wavelengthSpinBox = new QDoubleSpinBox();
+    m_wavelengthSpinBox = new PreciseDoubleSpinBox();
     m_wavelengthSpinBox->setDecimals(Settings::decimals);
     m_wavelengthSpinBox->setRange(Settings::minWavelength, Settings::maxWavelength);
+    m_wavelengthSpinBox->setSuffix(" nm");
 
     QGroupBox * ordersGroupBox = new QGroupBox("visible orders");
     ordersGroupBox->setStyle(new QPlastiqueStyle());

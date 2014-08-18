@@ -14,7 +14,10 @@ PreciseDoubleSpinBox::PreciseDoubleSpinBox(QWidget *parent) :
 
 QString PreciseDoubleSpinBox::textFromValue(double value) const
 {
-    return QWidget::locale().toString(value, 'f', m_precision);
+    QString text = QWidget::locale().toString(value, 'f', m_precision);
+    text.remove(QRegExp("0+$"));
+    text.remove(QRegExp("\\.$"));
+    return text;
 }
 
 void PreciseDoubleSpinBox::setDecimals(int prec)

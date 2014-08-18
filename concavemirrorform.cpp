@@ -2,9 +2,9 @@
 
 #include "concavemirror.h"
 #include "opticaldevicetabwidget.h"
+#include "precisedoublespinbox.h"
 #include "settings.h"
 
-#include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -18,25 +18,30 @@ ConcaveMirrorForm::ConcaveMirrorForm(ConcaveMirror * concaveMirror, OpticalDevic
 {
     m_nameLineEdit = new QLineEdit();
 
-    m_xSpinBox = new QDoubleSpinBox();
+    m_xSpinBox = new PreciseDoubleSpinBox();
     m_xSpinBox->setDecimals(Settings::decimals);
     m_xSpinBox->setRange(Settings::minX, Settings::maxX);
+    m_xSpinBox->setSuffix(" mm");
 
-    m_ySpinBox = new QDoubleSpinBox();
+    m_ySpinBox = new PreciseDoubleSpinBox();
     m_ySpinBox->setDecimals(Settings::decimals);
     m_ySpinBox->setRange(Settings::minY, Settings::maxY);
+    m_ySpinBox->setSuffix(" mm");
 
-    m_angleSpinBox = new QDoubleSpinBox();
+    m_angleSpinBox = new PreciseDoubleSpinBox();
     m_angleSpinBox->setDecimals(Settings::decimals);
     m_angleSpinBox->setRange(Settings::minAngle, Settings::maxAngle);
+    m_angleSpinBox->setSuffix("\260");
 
-    m_radiusSpinBox = new QDoubleSpinBox();
+    m_radiusSpinBox = new PreciseDoubleSpinBox();
     m_radiusSpinBox->setDecimals(Settings::decimals);
     m_radiusSpinBox->setRange(Settings::minRadius, Settings::maxRadius);
+    m_radiusSpinBox->setSuffix(" mm");
 
-    m_focalLengthSpinBox = new QDoubleSpinBox();
+    m_focalLengthSpinBox = new PreciseDoubleSpinBox();
     m_focalLengthSpinBox->setDecimals(Settings::decimals);
     m_focalLengthSpinBox->setRange(Settings::minFocalLength, Settings::maxFocalLength);
+    m_focalLengthSpinBox->setSuffix(" mm");
 
     m_applyButton = new QPushButton("Apply");
     m_applyButton->setAutoDefault(true);

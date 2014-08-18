@@ -2,9 +2,9 @@
 
 #include "diffractiongrating.h"
 #include "opticaldevicetabwidget.h"
+#include "precisedoublespinbox.h"
 #include "settings.h"
 
-#include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -18,29 +18,35 @@ DiffractionGratingForm::DiffractionGratingForm(DiffractionGrating * diffractionG
 {
     m_nameLineEdit = new QLineEdit();
 
-    m_xSpinBox = new QDoubleSpinBox();
+    m_xSpinBox = new PreciseDoubleSpinBox();
     m_xSpinBox->setDecimals(Settings::decimals);
     m_xSpinBox->setRange(Settings::minX, Settings::maxX);
+    m_xSpinBox->setSuffix(" mm");
 
-    m_ySpinBox = new QDoubleSpinBox();
+    m_ySpinBox = new PreciseDoubleSpinBox();
     m_ySpinBox->setDecimals(Settings::decimals);
     m_ySpinBox->setRange(Settings::minY, Settings::maxY);
+    m_ySpinBox->setSuffix(" mm");
 
-    m_angleSpinBox = new QDoubleSpinBox();
+    m_angleSpinBox = new PreciseDoubleSpinBox();
     m_angleSpinBox->setDecimals(Settings::decimals);
     m_angleSpinBox->setRange(Settings::minAngle, Settings::maxAngle);
+    m_angleSpinBox->setSuffix("\260");
 
-    m_radiusSpinBox = new QDoubleSpinBox();
+    m_radiusSpinBox = new PreciseDoubleSpinBox();
     m_radiusSpinBox->setDecimals(Settings::decimals);
     m_radiusSpinBox->setRange(Settings::minRadius, Settings::maxRadius);
+    m_radiusSpinBox->setSuffix(" mm");
 
-    m_blazeAngleSpinBox = new QDoubleSpinBox();
+    m_blazeAngleSpinBox = new PreciseDoubleSpinBox();
     m_blazeAngleSpinBox->setDecimals(Settings::decimals);
     m_blazeAngleSpinBox->setRange(Settings::minBlazingAngle, Settings::maxBlazingAngle);
+    m_blazeAngleSpinBox->setSuffix("\260");
 
-    m_densitySpinBox = new QDoubleSpinBox();
+    m_densitySpinBox = new PreciseDoubleSpinBox();
     m_densitySpinBox->setDecimals(Settings::decimals);
     m_densitySpinBox->setRange(Settings::minDensity, Settings::maxDensity);
+    m_densitySpinBox->setSuffix( QString::fromUtf8(" mm\u207b\u00b9"));
 
     m_applyButton = new QPushButton("Apply");
     m_applyButton->setAutoDefault(true);
