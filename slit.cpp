@@ -52,7 +52,6 @@ void Slit::setSlitRadius(qreal slitRadius)
 void Slit::build()
 {
     prepareGeometryChange();
-    m_label->setRotation(rotation());
     m_path = QPainterPath(QPointF(0.0, -m_radius));
     m_path.lineTo(0.0, -m_slitRadius);
     m_path.moveTo(0.0, m_slitRadius);

@@ -21,7 +21,6 @@ PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal
     setX(x);
     setY(y);
     setRotation(-90);
-    m_label->setRotation(rotation());
     m_path.moveTo(-5.0, 0.0);
     m_path.lineTo(5.0, 0.0);
     m_path.moveTo(0.0, -5.0);

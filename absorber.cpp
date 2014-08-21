@@ -57,13 +57,3 @@ void Absorber::reflect(Ray *) const
 {
     return; //absorber never reflects
 }
-
-QRectF Absorber::boundingRect() const
-{
-    return QRectF(0.0, 0.0, 0.0, 0.0); //item is never drawn
-}
-
-void Absorber::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
-{
-    return; //item is never drawn
-}

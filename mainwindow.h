@@ -3,12 +3,10 @@
 
 #include <QMainWindow>
 
-class OpticalDeviceTabWidget;
-class QGraphicsView;
-class DockableTabWidget;
-class Reflector;
-class LightSource;
 class OpticalSystem;
+
+class QDockWidget;
+class QToolBar;
 
 class MainWindow : public QMainWindow
 {
@@ -16,23 +14,26 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget * parent = 0);
     ~MainWindow();
+public slots:
+    void toggleFileToolBar(bool checked);
+    void toggleDeviceToolBar(bool checked);
+    void toggleZoomToolBar(bool checked);
+    void toggleReflectorsDockWidget(bool checked);
+    void toggleLightSourcesDockWidget(bool checked);
 protected:
     void closeEvent(QCloseEvent *event);
 private:
-    void buildToolbar();
+    void buildMenuBar();
+    void buildToolBar();
     void writeSettings();
     void readSettings();
+private:
     OpticalSystem * m_system;
-public slots:
-    void addPlaneMirror();
-    void addConcaveMirror();
-    void addDiffractionGrating();
-    void addSlit();
-    void addLightSource();
-    void removeReflector();
-    void removeLightSource();
-    void openSystem();
-    void saveSystem();
+    QToolBar * m_fileToolBar;
+    QToolBar * m_deviceToolBar;
+    QToolBar * m_zoomToolBar;
+    QDockWidget * m_reflectorsDockWidget;
+    QDockWidget * m_lightSourcesDockWidget;
 };
 
 #endif // MAINWINDOW_H

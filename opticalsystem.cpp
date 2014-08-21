@@ -8,12 +8,14 @@
 #include "opticaldevicetabwidget.h"
 #include "opticalsystemreader.h"
 #include "opticalsystemwriter.h"
+#include "optionsdialog.h"
 #include "planemirror.h"
 #include "planemirrorform.h"
 #include "pointsource.h"
 #include "pointsourceform.h"
 #include "reflector.h"
 #include "settings.h"
+#include "sizedialog.h"
 #include "slit.h"
 #include "slitform.h"
 
@@ -21,10 +23,13 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QGraphicsView>
+#include <QList>
 #include <QMainWindow>
+#include <QWheelEvent>
 
 OpticalSystem::OpticalSystem(QMainWindow * parent) :
-    QGraphicsView(parent)
+    QGraphicsView(parent),
+    m_filename("")
 {
     m_scene = new QGraphicsScene(this);
     m_scene->setSceneRect(Settings::minX, Settings::minY, Settings::maxX - Settings::minX, Settings::maxY - Settings::minY);
@@ -32,17 +37,8 @@ OpticalSystem::OpticalSystem(QMainWindow * parent) :
     setScene(m_scene);
     ensureVisible(Settings::minX, Settings::minY, 0.0, 0.0);
 
-    QDockWidget * reflectorDockWidget = new QDockWidget(tr("Reflectors"), this);
-    m_reflectorsTabs = new OpticalDeviceTabWidget(reflectorDockWidget);
-    reflectorDockWidget->setWidget(m_reflectorsTabs);
-
-    QDockWidget * lightSourceDockWidget = new QDockWidget(tr("Light Sources"), this);
-    m_lightSourcesTabs = new OpticalDeviceTabWidget(lightSourceDockWidget);
-    lightSourceDockWidget->setWidget(m_lightSourcesTabs);
-
-    parent->setCentralWidget(this);
-    parent->addDockWidget(Qt::BottomDockWidgetArea, reflectorDockWidget);
-    parent->addDockWidget(Qt::BottomDockWidgetArea, lightSourceDockWidget);
+    m_reflectorsTabs = new OpticalDeviceTabWidget(this);
+    m_lightSourcesTabs = new OpticalDeviceTabWidget(this);
 
     newScene();
 }
@@ -51,18 +47,6 @@ OpticalSystem::~OpticalSystem()
 {
     qDeleteAll(m_lightSources);
     qDeleteAll(m_reflectors);
-}
-
-void OpticalSystem::open()
-{
-    OpticalSystemReader reader(this);
-    reader.readFile(QFileDialog::getOpenFileName(this, "Open System", QString(), "XML files (*.xml)"));
-}
-
-void OpticalSystem::save()
-{
-    OpticalSystemWriter writer(this);
-    writer.writeFile(QFileDialog::getSaveFileName(this, "Save System", QString(), "XML files (*.xml)"));
 }
 
 void OpticalSystem::newScene()
@@ -80,6 +64,7 @@ void OpticalSystem::newScene()
     m_reflectors.append(new Absorber(Settings::minX - 1.0, Settings::maxY + 1.0, Settings::maxX + 1.0, Settings::maxY + 1.0, this));
     m_reflectors.append(new Absorber(Settings::maxX + 1.0, Settings::maxY + 1.0, Settings::maxX + 1.0, Settings::minY - 1.0, this));
     m_reflectors.append(new Absorber(Settings::maxX + 1.0, Settings::minY - 1.0, Settings::minX - 1.0, Settings::minY - 1.0, this));
+    m_scene->setSceneRect(Settings::minX, Settings::minY, Settings::maxX - Settings::minX, Settings::maxY - Settings::minY);
 }
 
 void OpticalSystem::addPlaneMirror()
@@ -205,4 +190,100 @@ QList<Reflector *> const & OpticalSystem::reflectors()
 QList<LightSource *> const & OpticalSystem::lightSources()
 {
     return m_lightSources;
+}
+
+void OpticalSystem::newSystem()
+{
+    SizeDialog sizeDialog(this);
+    if(sizeDialog.exec() == QDialog::Accepted)
+    {
+        Settings::minX = sizeDialog.minX();
+        Settings::maxX = sizeDialog.maxX();
+        Settings::minY = sizeDialog.minY();
+        Settings::maxY = sizeDialog.maxY();
+        newScene();
+    }
+}
+
+void OpticalSystem::openSystem()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Open System", QString(), "XML files (*.xml)");
+    if(filename.isEmpty()) return;
+    m_filename = filename;
+    OpticalSystemReader reader(this);
+    reader.readFile(m_filename);
+}
+
+void OpticalSystem::saveSystem()
+{
+    if(m_filename.isEmpty())
+    {
+        saveSystemAs();
+    }
+    else
+    {
+        OpticalSystemWriter writer(this);
+        writer.writeFile(m_filename);
+    }
+}
+
+void OpticalSystem::saveSystemAs()
+{
+    QString filename = QFileDialog::getSaveFileName(this, "Save System", QString(), "XML files (*.xml)");
+    if(filename.isEmpty()) return;
+    m_filename = filename;
+    OpticalSystemWriter writer(this);
+    writer.writeFile(m_filename);
+}
+
+void OpticalSystem::zoom(int scale)
+{
+    setTransform(transform().fromScale(scale / 100.0, scale / 100.0));
+}
+
+void OpticalSystem::options()
+{
+    OptionsDialog optionsDialog(this);
+    if(optionsDialog.exec() == QDialog::Accepted)
+    {
+        const bool newPen = Settings::primaryColor != optionsDialog.primaryColor() || Settings::deviceThickness != optionsDialog.deviceThickness();
+        const bool newChildPen = Settings::secondaryColor != optionsDialog.secondaryColor();
+        const bool showLabels = !Settings::labels && optionsDialog.labels();
+        const bool hideLabels = Settings::labels && !optionsDialog.labels();
+        const bool showNormals = !Settings::normals && optionsDialog.normals();
+        const bool hideNormals = Settings::normals && !optionsDialog.normals();
+
+        Settings::normals = optionsDialog.normals();
+        Settings::labels = optionsDialog.labels();
+        Settings::deviceThickness = optionsDialog.deviceThickness();
+        Settings::primaryColor = optionsDialog.primaryColor();
+        Settings::secondaryColor = optionsDialog.secondaryColor();
+        if(Settings::backgroundColor != optionsDialog.backgroundColor()) m_scene->setBackgroundBrush(QBrush(Settings::backgroundColor = optionsDialog.backgroundColor()));
+        foreach(Reflector * reflector, m_reflectors)
+        {
+            if(newPen) reflector->newPen();
+            if(newChildPen)
+            {
+                reflector->newLabelPen();
+                reflector->newNormalPen();
+            }
+            if(showLabels) reflector->showLabel();
+            if(hideLabels) reflector->hideLabel();
+            if(showNormals) reflector->showNormal();
+            if(hideNormals) reflector->hideNormal();
+        }
+        foreach(LightSource * lightSource, m_lightSources)
+        {
+            if(newPen) lightSource->newPen();
+            if(newChildPen)
+            {
+                lightSource->newLabelPen();
+                lightSource->newNormalPen();
+            }
+            if(showLabels) lightSource->showLabel();
+            if(hideLabels) lightSource->hideLabel();
+            if(showNormals) lightSource->showNormal();
+            if(hideNormals) lightSource->hideNormal();
+        }
+    }
 }

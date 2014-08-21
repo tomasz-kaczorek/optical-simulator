@@ -16,9 +16,6 @@ public:
 
     qreal scalar(Ray const * ray) const;
     void reflect(Ray * ray) const;
-
-    QRectF boundingRect() const;
-    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 private:
     QPointF m_leftEdge;
     QPointF m_rightEdge;

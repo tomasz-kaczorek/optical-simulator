@@ -65,7 +65,6 @@ void DiffractionGrating::build(bool complete)
     prepareGeometryChange();
     if(complete)
     {
-        m_label->setRotation(rotation());
         m_path = QPainterPath(QPointF(0.0, -m_radius));
         m_path.lineTo(QPointF(0.0, m_radius));
         m_leftEdge = leftEdge();

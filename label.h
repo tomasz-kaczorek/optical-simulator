@@ -11,7 +11,8 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter * painter, QStyleOptionGraphicsItem const * option, QWidget * widget);
 private:
-    qreal m_adjustment;
+    qreal m_horizontalAdjustment;
+    qreal m_verticalAdjustment;
 };
 
 #endif // LABEL_H

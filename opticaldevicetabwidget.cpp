@@ -45,5 +45,5 @@ void OpticalDeviceTabWidget::cancel()
 
 void OpticalDeviceTabWidget::changed()
 {
-    setTabIcon(currentIndex(), QIcon("Icons/SaveIcon.png"));
+    setTabIcon(currentIndex(), QIcon("Icons/Save.png"));
 }

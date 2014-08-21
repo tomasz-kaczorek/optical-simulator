@@ -38,7 +38,10 @@ SOURCES += main.cpp\
     opticalsystemreader.cpp \
     precisedoublespinbox.cpp \
     slit.cpp \
-    slitform.cpp
+    slitform.cpp \
+    zoomwidget.cpp \
+    sizedialog.cpp \
+    optionsdialog.cpp
 
 HEADERS  += mainwindow.h \
     planemirror.h \
@@ -65,4 +68,7 @@ HEADERS  += mainwindow.h \
     opticalsystemreader.h \
     precisedoublespinbox.h \
     slit.h \
-    slitform.h
+    slitform.h \
+    zoomwidget.h \
+    sizedialog.h \
+    optionsdialog.h

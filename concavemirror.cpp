@@ -52,7 +52,6 @@ void ConcaveMirror::setFocalLength(qreal focalLength)
 void ConcaveMirror::build()
 {
     prepareGeometryChange();
-    m_label->setRotation(rotation());
     m_angularRadius = m_focalLength > 0.0 ? qAsin(m_radius / 2.0 / m_focalLength) : M_PI;
     m_path = QPainterPath(QPointF(2.0 * m_focalLength * (1.0 - qCos(m_angularRadius)), -m_radius));
     m_path.arcTo(0.0, -2.0 * m_focalLength, 4.0 * m_focalLength, 4.0 * m_focalLength, 180 * (1.0 - m_angularRadius / M_PI ), 2 * 180 * m_angularRadius / M_PI);

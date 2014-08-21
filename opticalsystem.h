@@ -19,24 +19,14 @@ public:
     OpticalSystem(QMainWindow * parent = 0);
     ~OpticalSystem();
 
-    void open();
-    void save();
-
     void newScene();
 
-    void addPlaneMirror();
     void addPlaneMirror(QString name, qreal x, qreal y, qreal angle, qreal radius);
-    void addConcaveMirror();
     void addConcaveMirror(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal focalLength);
-    void addDiffractionGrating();
     void addDiffractionGrating(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density);
-    void addSlit();
     void addSlit(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal slitRadius);
-    void removeReflector();
 
-    void addPointSource();
     void addPointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active);
-    void removeLightSource();
 
     QGraphicsScene * scene();
 
@@ -45,17 +35,33 @@ public:
 
     QList<Reflector *> const & reflectors();
     QList<LightSource *> const & lightSources();
+public slots:
+    void newSystem();
+    void openSystem();
+    void saveSystem();
+    void saveSystemAs();
+
+    void addPlaneMirror();
+    void addConcaveMirror();
+    void addDiffractionGrating();
+    void addSlit();
+    void removeReflector();
+
+    void addPointSource();
+    void removeLightSource();
+
+    void zoom(int scale);
+
+    void options();
 private:
-    QGraphicsScene *m_scene;
-    OpticalDeviceTabWidget *m_reflectorsTabs;
-    OpticalDeviceTabWidget *m_lightSourcesTabs;
+    QString m_filename;
+
+    QGraphicsScene * m_scene;
+    OpticalDeviceTabWidget * m_reflectorsTabs;
+    OpticalDeviceTabWidget * m_lightSourcesTabs;
 
     QList<Reflector *> m_reflectors;
     QList<LightSource *> m_lightSources;
-signals:
-
-public slots:
-
 };
 
 #endif // OPTICALSYSTEM_H
