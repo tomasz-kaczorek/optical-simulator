@@ -121,17 +121,20 @@ void OptionsDialog::labelsChanged(int state)
 
 void OptionsDialog::primaryColorClicked()
 {
-    m_primaryColorButton->setIcon(icon(m_primaryColor = QColorDialog::getColor(Settings::primaryColor, this, "Primary Color")));
+    QColor color = QColorDialog::getColor(Settings::primaryColor, this, "Primary Color");
+    if(color.isValid()) m_primaryColorButton->setIcon(icon(m_primaryColor = color));
 }
 
 void OptionsDialog::secondaryColorClicked()
 {
-    m_secondaryColorButton->setIcon(icon(m_secondaryColor = QColorDialog::getColor(Settings::secondaryColor, this, "Secondary Color")));
+    QColor color = QColorDialog::getColor(Settings::secondaryColor, this, "Secondary Color");
+    if(color.isValid()) m_secondaryColorButton->setIcon(icon(m_secondaryColor = color));
 }
 
 void OptionsDialog::backgroundColorClicked()
 {
-    m_backgroundColorButton->setIcon(icon(m_backgroundColor = QColorDialog::getColor(Settings::backgroundColor, this, "Background Color")));
+    QColor color = QColorDialog::getColor(Settings::backgroundColor, this, "Background Color");
+    if(color.isValid()) m_backgroundColorButton->setIcon(icon(m_backgroundColor = color));
 }
 
 QIcon OptionsDialog::icon(QColor color)
