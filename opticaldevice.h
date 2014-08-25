@@ -13,9 +13,6 @@ class Reflector;
 
 class OpticalDevice : public QGraphicsItem
 {
-protected: //not meant to be used independently
-    OpticalDevice(OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
-    ~OpticalDevice();
 public:
     enum
     {
@@ -26,6 +23,9 @@ public:
         Slit = UserType + 4,
         PointSource = UserType + 5
     };
+
+    OpticalDevice(OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
+    ~OpticalDevice();
 
     virtual int type() const = 0;
 

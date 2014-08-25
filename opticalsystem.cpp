@@ -141,11 +141,10 @@ void OpticalSystem::removeReflector()
 
 void OpticalSystem::addPointSource()
 {
-    bool array[5] = {true, true, true, true, true};
-    addPointSource("Point Source", Settings::minX, Settings::minY, 0.0, 0.0, 0, Settings::minWavelength, array, true);
+    addPointSource("Point Source", Settings::minX, Settings::minY, 0.0, 0.0, 0, Settings::minWavelength, Orders::FirstPositive, true);
 }
 
-void OpticalSystem::addPointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[], bool active)
+void OpticalSystem::addPointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, Orders orders, bool active)
 {
     PointSource * pointSource = new PointSource(name, x, y, beginAngle, endAngle, quantity, wavelength, orders, active, this);
     m_scene->addItem(pointSource);

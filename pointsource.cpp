@@ -7,12 +7,13 @@
 #include <QGraphicsScene>
 #include <qmath.h>
 
-PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active, OpticalSystem * opticalSystem, QGraphicsItem *parent) :
+PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, Orders orders, bool active, OpticalSystem * opticalSystem, QGraphicsItem *parent) :
     LightSource(opticalSystem, parent),
     m_beginAngle(beginAngle),
     m_endAngle(endAngle),
     m_quantity(quantity),
     m_wavelength(wavelength),
+    m_orders(orders),
     m_active(active)
 {
     prepareGeometryChange();
@@ -26,7 +27,6 @@ PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal
     m_path.moveTo(0.0, -5.0);
     m_path.lineTo(0.0, 5.0);
     m_color = RGB();
-    for(int i = 0; i < 5; ++i) m_orders[i] = orders[i];
     build(true);
 }
 
@@ -71,9 +71,14 @@ void PointSource::setWavelength(qreal wavelength)
     m_color = RGB();
 }
 
-void PointSource::setOrder(int order, bool visible)
+bool PointSource::order(Orders::Order order) const
 {
-    m_orders[order + 2] = visible;
+    return m_orders[order];
+}
+
+void PointSource::setOrder(Orders::Order order, bool visible)
+{
+    m_orders.set(order, visible);
 }
 
 bool PointSource::active() const
@@ -108,8 +113,7 @@ void PointSource::build(bool complete)
     {
         if(m_active)
         {
-            bool array[5] = {false, false, m_orders[2], false, false};
-            foreach(Ray * ray, m_rays) ray->replot(array);
+            foreach(Ray * ray, m_rays) ray->replot(m_wavelength, m_color, m_orders);
         }
     }
 }
@@ -154,7 +158,7 @@ QColor PointSource::RGB()
 
 void PointSource::addRay(qreal angle)
 {
-    Ray * ray = new Ray(this, x(), y(), angle);
+    Ray * ray = new Ray(x(), y(), angle, m_wavelength, m_orders, QPen(color()), reflectors());
     m_rays.append(ray);
     m_opticalSystem->scene()->addItem(ray);
 }
@@ -169,19 +173,14 @@ QColor PointSource::color() const
     return m_color;
 }
 
-bool PointSource::order(int order) const
-{
-    return order < -2 || order > 2 ? false : m_orders[order + 2];
-}
-
 void PointSource::plot()
 {
     foreach(Ray * ray, m_rays) ray->plot();
 }
 
-void PointSource::replot(bool orders[])
+void PointSource::replot()
 {
-    foreach(Ray * ray, m_rays) ray->replot(orders);
+    foreach(Ray * ray, m_rays) ray->replot();
 }
 
 void PointSource::replot(Reflector * reflector)

@@ -1,6 +1,7 @@
 #include "opticalsystemreader.h"
 
 #include "opticalsystem.h"
+#include "orders.h"
 #include "settings.h"
 
 #include <QFile>
@@ -125,7 +126,7 @@ void OpticalSystemReader::readPointSource()
     qreal endAngle;
     int quantity;
     qreal wavelength;
-    bool orders[5];
+    Orders orders;
     bool active;
     if(m_reader.readNextStartElement() && m_reader.name() == "Name") name = m_reader.readElementText();
     if(m_reader.readNextStartElement() && m_reader.name() == "X") x = m_reader.readElementText().toDouble();
@@ -136,11 +137,12 @@ void OpticalSystemReader::readPointSource()
     if(m_reader.readNextStartElement() && m_reader.name() == "Wavelength") wavelength = m_reader.readElementText().toDouble();
     if(m_reader.readNextStartElement() && m_reader.name() == "VisibleOrders")
     {
-        if(m_reader.readNextStartElement() && m_reader.name() == "SecondNegative") orders[0] = (m_reader.readElementText() == "Yes");
-        if(m_reader.readNextStartElement() && m_reader.name() == "FirstNegative") orders[1] = (m_reader.readElementText() == "Yes");
-        if(m_reader.readNextStartElement() && m_reader.name() == "Zero") orders[2] = (m_reader.readElementText() == "Yes");
-        if(m_reader.readNextStartElement() && m_reader.name() == "FirstPositive") orders[3] = (m_reader.readElementText() == "Yes");
-        if(m_reader.readNextStartElement() && m_reader.name() == "SecondPositive") orders[4] = (m_reader.readElementText() == "Yes");
+        if(m_reader.readNextStartElement() && m_reader.name() == "SecondNegative") orders.set(Orders::SecondNegative, m_reader.readElementText() == "Yes");
+        if(m_reader.readNextStartElement() && m_reader.name() == "FirstNegative") orders.set(Orders::FirstNegative, m_reader.readElementText() == "Yes");
+        if(m_reader.readNextStartElement() && m_reader.name() == "Zero") orders.set(Orders::Zero, m_reader.readElementText() == "Yes");
+        if(m_reader.readNextStartElement() && m_reader.name() == "FirstPositive") orders.set(Orders::FirstPositive, m_reader.readElementText() == "Yes");
+        if(m_reader.readNextStartElement() && m_reader.name() == "SecondPositive") orders.set(Orders::SecondPositive, m_reader.readElementText() == "Yes");
+        if(m_reader.readNextStartElement() && m_reader.name() == "Max") orders.set(Orders::Max, m_reader.readElementText() == "Yes");
         m_reader.readNext();
     }
     if(m_reader.readNextStartElement() && m_reader.name() == "Active") active = (m_reader.readElementText() == "Yes");

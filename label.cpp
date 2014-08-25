@@ -30,6 +30,7 @@ QRectF Label::boundingRect() const
 
 void Label::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
+    painter->setRenderHint(QPainter::TextAntialiasing);
     painter->translate(m_horizontalAdjustment, m_verticalAdjustment);
     QGraphicsSimpleTextItem::paint(painter, option, widget);
 }

@@ -71,7 +71,7 @@ qreal PlaneMirror::scalar(Ray const * ray) const
     qreal l = rdy * (m_leftEdge.x() - rx) - rdx * (m_leftEdge.y() - ry);
     qreal r = rdy * (m_rightEdge.x() - rx) - rdx * (m_rightEdge.y() - ry);
     //both points lie on the same side of ray - intersection impossible
-    if((Settings::greaterThanZero(l) && Settings::greaterThanZero(r)) || (Settings::lessThanZero(l) && Settings::lessThanZero(r))) return -1.0;
+    if((Settings::fuzzyIsGreaterThanZero(l) && Settings::fuzzyIsGreaterThanZero(r)) || (Settings::fuzzyIsLessThanZero(l) && Settings::fuzzyIsLessThanZero(r))) return -1.0;
     qreal mx = m_leftEdge.x(); //x coordinate of mirror segment edge
     qreal my = m_leftEdge.y(); //y coordinate of mirror segment edge
     qreal mdx = m_rightEdge.x() - mx; //horizontal component of the mirror segment's vector
@@ -91,7 +91,7 @@ void PlaneMirror::reflect(Ray * ray) const
     qreal mdy = m_leftEdge.y() - m_rightEdge.y(); //vertical component of the line between mirror's edges
     //calculate on which side of a mirror does the ray begin
     //if it begins on the back side, return as there will be no reflection
-    if(Settings::greaterThanOrEqualZero(mdy * (rx - mx) - mdx * (ry - my))) return;
+    if(Settings::fuzzyIsGreaterThanOrEqualToZero(mdy * (rx - mx) - mdx * (ry - my))) return;
     //find a vector (mdx, mdy) perpedicular to mirror surface
     mdx = m_rightEdge.y() - m_leftEdge.y();
     mdy = m_leftEdge.x() - m_rightEdge.x();

@@ -71,7 +71,8 @@ void OpticalDevice::newNormalPen()
 void OpticalDevice::newPen()
 {
     prepareGeometryChange();
-    m_pen = QPen(Settings::primaryColor, Settings::deviceThickness, Qt::SolidLine, Qt::RoundCap);
+    m_pen.setColor(Settings::primaryColor);
+    m_pen.setWidthF(Settings::deviceThickness);
 }
 
 QString OpticalDevice::name() const
@@ -109,6 +110,7 @@ QRectF OpticalDevice::boundingRect() const
 
 void OpticalDevice::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+    painter->setRenderHint(QPainter::Antialiasing);
     painter->setPen(m_pen);
     painter->drawPath(m_path);
 }

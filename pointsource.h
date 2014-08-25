@@ -2,13 +2,14 @@
 #define POINTSOURCE_H
 
 #include "lightsource.h"
+#include "orders.h"
 
 class Ray;
 
 class PointSource : public LightSource
 {
 public:
-    PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active, OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
+    PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, Orders orders, bool active, OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
     ~PointSource();
 
     qreal beginAngle() const;
@@ -20,9 +21,12 @@ public:
     int quantity() const;
     void setQuantity(int quantity);
 
+    qreal wavelength() const;
     void setWavelength(qreal wavelength);
+    QColor color() const;
 
-    void setOrder(int order, bool visible);
+    bool order(Orders::Order order) const;
+    void setOrder(Orders::Order order, bool visible);
 
     bool active() const;
     void setActive(bool active);
@@ -37,16 +41,13 @@ private:
     int m_quantity;
     qreal m_wavelength;
     QColor m_color;
-    bool m_orders[5];
+    Orders m_orders;
     bool m_active;
     QList<Ray *> m_rays;
 
 public: //LightSource
-    qreal wavelength() const override;
-    QColor color() const override;
-    bool order(int order) const override;
     void plot() override;
-    void replot(bool orders[5]) override;
+    void replot() override;
     void replot(Reflector * reflector) override;
 public: //OpticalDevice
     int type() const override;

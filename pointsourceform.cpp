@@ -11,7 +11,6 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QLineEdit>
-#include <QPlastiqueStyle>
 #include <QPushButton>
 #include <QSpinBox>
 
@@ -52,13 +51,13 @@ PointSourceForm::PointSourceForm(PointSource * pointSource, OpticalDeviceTabWidg
     m_wavelengthSpinBox->setSuffix(" nm");
 
     QGroupBox * ordersGroupBox = new QGroupBox("visible orders");
-    ordersGroupBox->setStyle(new QPlastiqueStyle());
 
     m_orderCheckBoxes[0] = new QCheckBox("-2");
     m_orderCheckBoxes[1] = new QCheckBox("-1");
     m_orderCheckBoxes[2] = new QCheckBox("0");
     m_orderCheckBoxes[3] = new QCheckBox("+1");
     m_orderCheckBoxes[4] = new QCheckBox("+2");
+    m_orderCheckBoxes[5] = new QCheckBox("Max");
 
     m_activeCheckBox = new QCheckBox("active");
 
@@ -78,6 +77,7 @@ PointSourceForm::PointSourceForm(PointSource * pointSource, OpticalDeviceTabWidg
     orderLayout->addWidget(m_orderCheckBoxes[2], 0, 1);
     orderLayout->addWidget(m_orderCheckBoxes[3], 0, 2);
     orderLayout->addWidget(m_orderCheckBoxes[4], 1, 2);
+    orderLayout->addWidget(m_orderCheckBoxes[5], 1, 1);
 
     ordersGroupBox->setLayout(orderLayout);
 
@@ -135,6 +135,8 @@ PointSourceForm::PointSourceForm(PointSource * pointSource, OpticalDeviceTabWidg
     connect(m_orderCheckBoxes[3], SIGNAL(stateChanged(int)), parent, SLOT(changed()));
     connect(m_orderCheckBoxes[4], SIGNAL(stateChanged(int)), this, SLOT(reflection()));
     connect(m_orderCheckBoxes[4], SIGNAL(stateChanged(int)), parent, SLOT(changed()));
+    connect(m_orderCheckBoxes[5], SIGNAL(stateChanged(int)), this, SLOT(reflection()));
+    connect(m_orderCheckBoxes[5], SIGNAL(stateChanged(int)), parent, SLOT(changed()));
     connect(m_activeCheckBox, SIGNAL(stateChanged(int)), this, SLOT(geometry()));
     connect(m_activeCheckBox, SIGNAL(stateChanged(int)), parent, SLOT(changed()));
     connect(m_aimButton, SIGNAL(clicked()), this, SLOT(aim()));
@@ -194,23 +196,24 @@ void PointSourceForm::apply()
         m_pointSource->setEndAngle(m_endAngleSpinBox->value());
         m_pointSource->setQuantity(m_quantitySpinBox->value());
         m_pointSource->setWavelength(m_wavelengthSpinBox->value());
-        m_pointSource->setOrder(-2, m_orderCheckBoxes[0]->isChecked());
-        m_pointSource->setOrder(-1, m_orderCheckBoxes[1]->isChecked());
-        m_pointSource->setOrder(0, m_orderCheckBoxes[2]->isChecked());
-        m_pointSource->setOrder(1, m_orderCheckBoxes[3]->isChecked());
-        m_pointSource->setOrder(2, m_orderCheckBoxes[4]->isChecked());
+        m_pointSource->setOrder(Orders::SecondNegative, m_orderCheckBoxes[Orders::SecondNegative]->isChecked());
+        m_pointSource->setOrder(Orders::FirstNegative, m_orderCheckBoxes[Orders::FirstNegative]->isChecked());
+        m_pointSource->setOrder(Orders::Zero, m_orderCheckBoxes[Orders::Zero]->isChecked());
+        m_pointSource->setOrder(Orders::FirstPositive, m_orderCheckBoxes[Orders::FirstPositive]->isChecked());
+        m_pointSource->setOrder(Orders::SecondPositive, m_orderCheckBoxes[Orders::SecondPositive]->isChecked());
+        m_pointSource->setOrder(Orders::Max, m_orderCheckBoxes[Orders::Max]->isChecked());
         m_pointSource->setActive(m_activeCheckBox->isChecked());
         m_pointSource->build(true);
     }
     else if(m_reflection)
     {
         m_pointSource->setWavelength(m_wavelengthSpinBox->value());
-        m_pointSource->setOrder(-2, m_orderCheckBoxes[0]->isChecked());
-        m_pointSource->setOrder(-1, m_orderCheckBoxes[1]->isChecked());
-        m_pointSource->setOrder(0, m_orderCheckBoxes[2]->isChecked());
-        m_pointSource->setOrder(1, m_orderCheckBoxes[3]->isChecked());
-        m_pointSource->setOrder(2, m_orderCheckBoxes[4]->isChecked());
-        m_pointSource->setActive(m_activeCheckBox->isChecked());
+        m_pointSource->setOrder(Orders::SecondNegative, m_orderCheckBoxes[Orders::SecondNegative]->isChecked());
+        m_pointSource->setOrder(Orders::FirstNegative, m_orderCheckBoxes[Orders::FirstNegative]->isChecked());
+        m_pointSource->setOrder(Orders::Zero, m_orderCheckBoxes[Orders::Zero]->isChecked());
+        m_pointSource->setOrder(Orders::FirstPositive, m_orderCheckBoxes[Orders::FirstPositive]->isChecked());
+        m_pointSource->setOrder(Orders::SecondPositive, m_orderCheckBoxes[Orders::SecondPositive]->isChecked());
+        m_pointSource->setOrder(Orders::Max, m_orderCheckBoxes[Orders::Max]->isChecked());
         m_pointSource->build(false);
     }
     m_geometry = false;
@@ -228,11 +231,12 @@ void PointSourceForm::cancel()
     m_endAngleSpinBox->setValue(m_pointSource->endAngle());
     m_quantitySpinBox->setValue(m_pointSource->quantity());
     m_wavelengthSpinBox->setValue(m_pointSource->wavelength());
-    m_orderCheckBoxes[0]->setChecked(m_pointSource->order(-2));
-    m_orderCheckBoxes[1]->setChecked(m_pointSource->order(-1));
-    m_orderCheckBoxes[2]->setChecked(m_pointSource->order(0));
-    m_orderCheckBoxes[3]->setChecked(m_pointSource->order(1));
-    m_orderCheckBoxes[4]->setChecked(m_pointSource->order(2));
+    m_orderCheckBoxes[0]->setChecked(m_pointSource->order(Orders::SecondNegative));
+    m_orderCheckBoxes[1]->setChecked(m_pointSource->order(Orders::FirstNegative));
+    m_orderCheckBoxes[2]->setChecked(m_pointSource->order(Orders::Zero));
+    m_orderCheckBoxes[3]->setChecked(m_pointSource->order(Orders::FirstPositive));
+    m_orderCheckBoxes[4]->setChecked(m_pointSource->order(Orders::SecondPositive));
+    m_orderCheckBoxes[5]->setChecked(m_pointSource->order(Orders::Max));
     m_activeCheckBox->setChecked(m_pointSource->active());
     m_geometry = false;
     m_reflection = false;

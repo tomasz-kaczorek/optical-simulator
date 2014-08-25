@@ -41,7 +41,9 @@ SOURCES += main.cpp\
     slitform.cpp \
     zoomwidget.cpp \
     sizedialog.cpp \
-    optionsdialog.cpp
+    optionsdialog.cpp \
+    simpleiconengine.cpp \
+    orders.cpp
 
 HEADERS  += mainwindow.h \
     planemirror.h \
@@ -71,4 +73,6 @@ HEADERS  += mainwindow.h \
     slitform.h \
     zoomwidget.h \
     sizedialog.h \
-    optionsdialog.h
+    optionsdialog.h \
+    simpleiconengine.h \
+    orders.h

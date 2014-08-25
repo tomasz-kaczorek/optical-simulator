@@ -35,29 +35,29 @@ namespace Settings {
     const qreal epsilon = 0.000001; //maximum difference of two qreal values, that are considered equal
     const unsigned int allowedRecursionDepth = 20; //maximum recursion depth, it determines maximum number of ray's segments
     //functions
-    inline bool equalZero(qreal x)
+    inline bool fuzzyIsEqualToZero(qreal x)
     {
-        return qFabs(x) < epsilon;
+        return qFuzzyCompare(qAbs(x) + 1.0, 1.0);
     }
 
-    inline bool lessThanZero(qreal x)
+    inline bool fuzzyIsLessThanOrEqualToZero(qreal x)
     {
-        return (x + epsilon) < 0.0;
+        return x < 0.0 || fuzzyIsEqualToZero(x);
     }
 
-    inline bool greaterThanZero(qreal x)
+    inline bool fuzzyIsGreaterThanOrEqualToZero(qreal x)
     {
-        return (x - epsilon) > 0.0;
+        return x > 0.0 || fuzzyIsEqualToZero(x);
     }
 
-    inline bool lessThanOrEqualZero(qreal x)
+    inline bool fuzzyIsLessThanZero(qreal x)
     {
-        return equalZero(x) || lessThanZero(x);
+        return !fuzzyIsGreaterThanOrEqualToZero(x);
     }
 
-    inline bool greaterThanOrEqualZero(qreal x)
+    inline bool fuzzyIsGreaterThanZero(qreal x)
     {
-        return equalZero(x) || greaterThanZero(x);
+        return !fuzzyIsLessThanOrEqualToZero(x);
     }
 
 }

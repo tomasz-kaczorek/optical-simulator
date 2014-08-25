@@ -44,7 +44,7 @@ qreal Absorber::scalar(const Ray * ray) const
     qreal l = rdy * (m_leftEdge.x() - rx) - rdx * (m_leftEdge.y() - ry);
     qreal r = rdy * (m_rightEdge.x() - rx) - rdx * (m_rightEdge.y() - ry);
     //both points lie on the same side of ray - intersection impossible
-    if((Settings::greaterThanZero(l) && Settings::greaterThanZero(r)) || (Settings::lessThanZero(l) && Settings::lessThanZero(r))) return -1.0;
+    if((Settings::fuzzyIsGreaterThanZero(l) && Settings::fuzzyIsGreaterThanZero(r)) || (Settings::fuzzyIsLessThanZero(l) && Settings::fuzzyIsLessThanZero(r))) return -1.0;
     qreal mx = m_leftEdge.x(); //x coordinate of mirror segment edge
     qreal my = m_leftEdge.y(); //y coordinate of mirror segment edge
     qreal mdx = m_rightEdge.x() - mx; //horizontal component of the mirror segment's vector

@@ -88,7 +88,7 @@ qreal Slit::scalar(const Ray * ray) const
     qreal sl = rdy * (m_leftSlitEdge.x() - rx) - rdx * (m_leftSlitEdge.y() - ry);
     qreal sr = rdy * (m_rightSlitEdge.x() - rx) - rdx * (m_rightSlitEdge.y() - ry);
     //pair of points lie on the same side of ray - intersection impossible
-    if(((Settings::greaterThanZero(l) && Settings::greaterThanZero(sl)) || (Settings::lessThanZero(l) && Settings::lessThanZero(sl)))&&((Settings::greaterThanZero(r) && Settings::greaterThanZero(sr)) || (Settings::lessThanZero(r) && Settings::lessThanZero(sr)))) return -1.0;
+    if(((Settings::fuzzyIsGreaterThanZero(l) && Settings::fuzzyIsGreaterThanZero(sl)) || (Settings::fuzzyIsLessThanZero(l) && Settings::fuzzyIsLessThanZero(sl)))&&((Settings::fuzzyIsGreaterThanZero(r) && Settings::fuzzyIsGreaterThanZero(sr)) || (Settings::fuzzyIsLessThanZero(r) && Settings::fuzzyIsLessThanZero(sr)))) return -1.0;
     qreal sx = m_leftEdge.x(); //x coordinate of slit segment edge
     qreal sy = m_leftEdge.y(); //y coordinate of slit segment edge
     qreal sdx = m_rightEdge.x() - sx; //horizontal component of the slit segment's vector

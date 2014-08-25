@@ -2,6 +2,7 @@
 #define OPTICALSYSTEM_H
 
 #include <QGraphicsView>
+#include "orders.h"
 
 class LightSource;
 class OpticalDeviceTabWidget;
@@ -26,7 +27,7 @@ public:
     void addDiffractionGrating(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal blazeAngle, qreal density);
     void addSlit(QString name, qreal x, qreal y, qreal angle, qreal radius, qreal slitRadius);
 
-    void addPointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, bool orders[5], bool active);
+    void addPointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal endAngle, int quantity, qreal wavelength, Orders orders, bool active);
 
     QGraphicsScene * scene();
 

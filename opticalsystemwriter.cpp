@@ -121,11 +121,12 @@ void OpticalSystemWriter::writePointSource(PointSource * item)
     m_writer.writeTextElement("Quantity", QString::number(item->quantity()));
     m_writer.writeTextElement("Wavelength", QString::number(item->wavelength()));
     m_writer.writeStartElement("VisibleOrders");
-    m_writer.writeTextElement("SecondNegative", item->order(-2) ? "Yes" : "No");
-    m_writer.writeTextElement("FirstNegative", item->order(-1) ? "Yes" : "No");
-    m_writer.writeTextElement("Zero", item->order(0) ? "Yes" : "No");
-    m_writer.writeTextElement("FirstPositive", item->order(1) ? "Yes" : "No");
-    m_writer.writeTextElement("SecondPositive", item->order(2) ? "Yes" : "No");
+    m_writer.writeTextElement("SecondNegative", item->order(Orders::SecondNegative) ? "Yes" : "No");
+    m_writer.writeTextElement("FirstNegative", item->order(Orders::FirstNegative) ? "Yes" : "No");
+    m_writer.writeTextElement("Zero", item->order(Orders::Zero) ? "Yes" : "No");
+    m_writer.writeTextElement("FirstPositive", item->order(Orders::FirstPositive) ? "Yes" : "No");
+    m_writer.writeTextElement("SecondPositive", item->order(Orders::SecondPositive) ? "Yes" : "No");
+    m_writer.writeTextElement("Max", item->order(Orders::Max) ? "Yes" : "No");
     m_writer.writeEndElement();
     m_writer.writeTextElement("Active", item->active() ? "Yes" : "No");
     m_writer.writeEndElement();

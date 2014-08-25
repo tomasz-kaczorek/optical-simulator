@@ -6,7 +6,6 @@
 class QCheckBox;
 class QColor;
 class QComboBox;
-class QIcon;
 class QPushButton;
 class QToolButton;
 
@@ -28,7 +27,6 @@ public slots:
     void secondaryColorClicked();
     void backgroundColorClicked();
 private:
-    QIcon icon(QColor color);
     QCheckBox * m_normalsCheckBox;
     QCheckBox * m_labelsCheckBox;
     QComboBox * m_thicknessComboBox;

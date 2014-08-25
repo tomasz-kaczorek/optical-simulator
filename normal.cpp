@@ -29,6 +29,7 @@ QRectF Normal::boundingRect() const
 
 void Normal::paint(QPainter * painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+    painter->setRenderHint(QPainter::Antialiasing);
     painter->setPen(m_pen);
     painter->drawPath(m_path);
 }

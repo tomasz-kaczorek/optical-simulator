@@ -1,61 +1,74 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "lightsource.h"
+#include <QGraphicsItem>
 
-#include <QGraphicsLineItem>
+#include "lightsource.h"
+#include "orders.h"
 
 class Reflector;
 
-class Ray : public QGraphicsLineItem
+class Ray : public QGraphicsItem
 {
 public:
     Ray(LightSource * lightSource, qreal x1, qreal y1, qreal x2, qreal y2, unsigned int recursionDepth = 0, Qt::PenStyle style = Qt::SolidLine, QGraphicsItem * parent = 0);
     Ray(LightSource * lightSource, qreal x1, qreal y1, qreal angle, unsigned int recursionDepth = 0, Qt::PenStyle style = Qt::SolidLine, QGraphicsItem * parent = 0);
+    Ray(qreal x, qreal y, qreal angle, qreal wavelength, Orders const & orders, QPen const & pen, QList<Reflector *> const & reflectors, QGraphicsItem * parent = 0);
+    Ray(unsigned int recursionDepth, qreal x1, qreal y1, qreal x2, qreal y2, qreal wavelength, Orders const & orders, QPen const & pen, QList<Reflector *> const & reflectors, QGraphicsItem * parent = 0);
     ~Ray();
 
-    inline qreal wavelength();
-    inline bool order(int order);
+    QLineF line() const;
+    qreal wavelength() const;
+    bool order(Orders::Order order) const;
 
     void plot();
-    void replot(bool orders[5]);
+    void replot();
+    void replot(qreal wavelength, QColor color, Orders orders);
     void replot(Reflector * reflector);
 
     void append(qreal x, qreal y);
-    void append(qreal x, qreal y, int order);
+    void append(qreal x, qreal y, Orders::Order order);
 private:
-    inline void adjust(qreal adjustment);
-    inline void remove(int order);
+    void adjust(qreal adjustment);
+    void remove(int order);
+
+    QPen m_pen;
+    QLineF m_line;
 
     unsigned int m_recursionDepth;
-    LightSource * m_lightSource;
-    Ray * m_rays[5];
+    qreal m_wavelength;
+    Orders m_orders;
+    Ray * m_rays[6];
     Reflector * m_reflector;
+    QList<Reflector *> const & m_reflectors;
+protected: //QGraphicsItem
+    QRectF boundingRect() const;
+    void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 
-qreal Ray::wavelength()
-{
-    return m_lightSource->wavelength();
-}
+//qreal Ray::wavelength()
+//{
+//    return m_lightSource->wavelength();
+//}
 
-bool Ray::order(int order)
-{
-    //returns true if the specified diffraction order is desired but not present
-    //returns false otherwise
-    return order >= -2 && order <= 2 && !m_rays[order + 2] && m_lightSource->order(order);
-}
+//bool Ray::order(int order)
+//{
+//    //returns true if the specified diffraction order is desired but not present
+//    //returns false otherwise
+//    return order >= -2 && order <= 2 && !m_rays[order + 2] && m_lightSource->order(order);
+//}
 
-void Ray::adjust(qreal adjustment)
-{
-    QLineF newLine = line();
-    newLine.setLength(newLine.length() * adjustment);
-    setLine(newLine);
-}
+//void Ray::adjust(qreal adjustment)
+//{
+//    QLineF newLine = line();
+//    newLine.setLength(newLine.length() * adjustment);
+//    setLine(newLine);
+//}
 
-void Ray::remove(int order)
-{
-    delete m_rays[order + 2];
-    m_rays[order + 2] = nullptr;
-}
+//void Ray::remove(int order)
+//{
+//    delete m_rays[order + 2];
+//    m_rays[order + 2] = nullptr;
+//}
 
 #endif // RAY_H

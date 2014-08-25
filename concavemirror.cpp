@@ -90,7 +90,7 @@ qreal ConcaveMirror::scalar(Ray const * ray) const
     qreal discriminant = b * b - 4.0 * a * c;
     //if discriminant < 0 there is no intersection
     //if discriminant = 0 the ray is tangential to mirror and they do not interact
-    if(Settings::lessThanOrEqualZero(discriminant)) return -1.0;
+    if(Settings::fuzzyIsLessThanOrEqualToZero(discriminant)) return -1.0;
     discriminant = qSqrt(discriminant);
     double d1 = (-b - discriminant) / (2.0 * a);
     double d2 = (-b + discriminant) / (2.0 * a);
@@ -101,8 +101,8 @@ qreal ConcaveMirror::scalar(Ray const * ray) const
     qreal mdy = m_leftEdge.y() - my; //vertical component of the line between mirror's edges
     //calculate on which side of the line between mirror's edges do the intersection point lie
     //d1 is always smaller - check it first and return if it is valid
-    if(Settings::greaterThanZero(d1) && Settings::greaterThanOrEqualZero(mdy * (rx + d1 * rdx - mx) - mdx * (ry + d1 * rdy - my))) return d1;
-    if(Settings::greaterThanZero(d2) && Settings::greaterThanOrEqualZero(mdy * (rx + d2 * rdx - mx) - mdx * (ry + d2 * rdy - my))) return d2;
+    if(Settings::fuzzyIsGreaterThanZero(d1) && Settings::fuzzyIsGreaterThanOrEqualToZero(mdy * (rx + d1 * rdx - mx) - mdx * (ry + d1 * rdy - my))) return d1;
+    if(Settings::fuzzyIsGreaterThanZero(d2) && Settings::fuzzyIsGreaterThanOrEqualToZero(mdy * (rx + d2 * rdx - mx) - mdx * (ry + d2 * rdy - my))) return d2;
     //neither intersection point lies on mirror
     return -1.0;
 }
@@ -119,7 +119,7 @@ void ConcaveMirror::reflect(Ray * ray) const
     //calculate on which side of a mirror does the ray begin
     //if it begins on the back side, return as there will be no reflection
     //vector (-mdy, mdx) is perpedicular to (mdx, mdy) and parallel to mirror's surface at intersection point
-    if(Settings::greaterThanOrEqualZero(-mdx * (rx - mx) - mdy * (ry - my))) return;
+    if(Settings::fuzzyIsGreaterThanOrEqualToZero(-mdx * (rx - mx) - mdy * (ry - my))) return;
     //plug: (x = mx + d * mdx) and (y = my + d * mdy) into distance equation between (rx, ry) and (x, y): sqrt((x - rx) ^ 2 + (y - ry) ^ 2)
     //abandon the root (as it is irrelevant) and minimize result to find projection of (rx, ry) on line perpedicular to mirror's surface
     //parabola's tip is located at d = -b / 2 * a

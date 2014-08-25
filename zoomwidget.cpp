@@ -16,7 +16,7 @@ ZoomWidget::ZoomWidget(QWidget *parent) :
     m_zoomSpinBox->setButtonSymbols(QAbstractSpinBox::NoButtons);
     connect(m_zoomSpinBox, SIGNAL(valueChanged(int)), this, SIGNAL(valueChanged(int)));
 
-    QMenu * menu = new QMenu();
+    QMenu * menu = new QMenu(this);
     QAction * action;
     for(int i = 0; i < 14; ++i)
     {

@@ -75,11 +75,10 @@ void DiffractionGrating::build(bool complete)
     }
     else
     {
-        bool orders[5] = {false, false, true, false, false};
         m_rays.append(nullptr);
         while(Ray * ray = m_rays.takeFirst())
         {
-            ray->replot(orders);
+            ray->replot();
             m_rays.append(ray);
         }
     }
@@ -106,7 +105,7 @@ qreal DiffractionGrating::scalar(Ray const * ray) const
     qreal l = rdy * (m_leftEdge.x() - rx) - rdx * (m_leftEdge.y() - ry);
     qreal r = rdy * (m_rightEdge.x() - rx) - rdx * (m_rightEdge.y() - ry);
     //both points lie on the same side of ray - intersection impossible
-    if((Settings::greaterThanZero(l) && Settings::greaterThanZero(r)) || (Settings::lessThanZero(l) && Settings::lessThanZero(r))) return -1.0;
+    if((Settings::fuzzyIsGreaterThanZero(l) && Settings::fuzzyIsGreaterThanZero(r)) || (Settings::fuzzyIsLessThanZero(l) && Settings::fuzzyIsLessThanZero(r))) return -1.0;
     qreal gx = m_leftEdge.x(); //x coordinate of diffraction grating segment edge
     qreal gy = m_leftEdge.y(); //y coordinate of diffraction grating segment edge
     qreal gdx = m_rightEdge.x() - gx; //horizontal component of the diffraction grating segment's vector
@@ -126,7 +125,7 @@ void DiffractionGrating::reflect(Ray * ray) const
     qreal gdy = m_leftEdge.y() - m_rightEdge.y(); //vertical component of the line between diffraction grating's edges
     //calculate on which side of a diffraction grating does the ray begin
     //if it begins on the back side, return as there will be no reflection
-    if(Settings::greaterThanOrEqualZero(gdy * (rx - gx) - gdx * (ry - gy))) return;
+    if(Settings::fuzzyIsGreaterThanOrEqualToZero(gdy * (rx - gx) - gdx * (ry - gy))) return;
     //find a vector (gdx, gdy) perpedicular to diffraction grating surface
     gdx = m_rightEdge.y() - m_leftEdge.y();
     gdy = m_leftEdge.x() - m_rightEdge.x();
@@ -136,53 +135,53 @@ void DiffractionGrating::reflect(Ray * ray) const
     qreal d = (gdx * (rx - gx) + gdy * (ry - gy)) / (gdx * gdx + gdy * gdy);
     qreal nx = gx + d * gdx; //x coordinate of (rx, ry) projection on normal
     qreal ny = gy + d * gdy; //y coordinate of (rx, ry) projection on normal
-    if(ray->order(0))
+    if(ray->order(Orders::Zero))
     {
-        ray->append(2.0 * nx - rx, 2.0 * ny - ry, 0);
+        ray->append(2.0 * nx - rx, 2.0 * ny - ry, Orders::Zero);
     }
     //calculate sine of the incident angle, it is equal the distance from (nx, ny) to (rx, ry) divided by distance from (rx, ry) to (gx, gy)
     qreal L = qSqrt((nx - rx) * (nx - rx) + (ny - ry) * (ny - ry)); //length of the ((rx, ry), (nx, ny)) vector
     qreal R = qSqrt((gx - rx) * (gx - rx) + (gy - ry) * (gy - ry)); //length of the ((rx, ry), (gx, gy)) vector (incident ray)
     qreal h = qSqrt((nx - gx) * (nx - gx) + (ny - gy) * (ny - gy)); //length of the ((gx, gy), (nx, ny)) vector
     qreal c = ray->wavelength() * density() * 1.0e-6; //order coefficient
-    if(ray->order(-2))
+    if(ray->order(Orders::SecondNegative))
     {
         d = -2.0 * c - L / R;
         if(d < 1.0 && d > -1.0)
         {
             d = h * d / qSqrt(1 - d * d);
             d = 1 - d / L;
-            ray->append(rx + d * (nx - rx), ry + d * (ny - ry), -2);
+            ray->append(rx + d * (nx - rx), ry + d * (ny - ry), Orders::SecondNegative);
         }
     }
-    if(ray->order(-1))
+    if(ray->order(Orders::FirstNegative))
     {
         d = -1.0 * c - L / R;
         if(d < 1.0 && d > -1.0)
         {
             d = h * d / qSqrt(1 - d * d);
             d = 1 - d / L;
-            ray->append(rx + d * (nx - rx), ry + d * (ny - ry), -1);
+            ray->append(rx + d * (nx - rx), ry + d * (ny - ry), Orders::FirstNegative);
         }
     }
-    if(ray->order(1))
+    if(ray->order(Orders::FirstPositive))
     {
         d = 1.0 * c - L / R;
         if(d < 1.0 && d > -1.0)
         {
             d = h * d / qSqrt(1 - d * d);
             d = 1 - d / L;
-            ray->append(rx + d * (nx - rx), ry + d * (ny - ry), 1);
+            ray->append(rx + d * (nx - rx), ry + d * (ny - ry), Orders::FirstPositive);
         }
     }
-    if(ray->order(2))
+    if(ray->order(Orders::SecondPositive))
     {
         d = 2.0 * c - L / R;
         if(d < 1.0 && d > -1.0)
         {
             d = h * d / qSqrt(1 - d * d);
             d = 1 - d / L;
-            ray->append(rx + d * (nx - rx), ry + d * (ny - ry), 2);
+            ray->append(rx + d * (nx - rx), ry + d * (ny - ry), Orders::SecondPositive);
         }
     }
 }

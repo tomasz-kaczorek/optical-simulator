@@ -4,7 +4,6 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPlastiqueStyle>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -32,7 +31,6 @@ SizeDialog::SizeDialog(QWidget *parent) :
     m_maxYSpinBox->setSuffix(" mm");
 
     QGroupBox * xGroupBox = new QGroupBox("Horizontal Coordinates");
-    xGroupBox->setStyle(new QPlastiqueStyle());
 
     QHBoxLayout * xLayout = new QHBoxLayout();
 
@@ -42,7 +40,6 @@ SizeDialog::SizeDialog(QWidget *parent) :
     xLayout->addWidget(m_maxXSpinBox);
 
     QGroupBox * yGroupBox = new QGroupBox("Vertical Coordinates");
-    yGroupBox->setStyle(new QPlastiqueStyle());
 
     QHBoxLayout * yLayout = new QHBoxLayout();
 

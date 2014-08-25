@@ -1,6 +1,7 @@
 #include "optionsdialog.h"
 
 #include "settings.h"
+#include "simpleiconengine.h"
 
 #include <QCheckBox>
 #include <QColor>
@@ -40,15 +41,15 @@ OptionsDialog::OptionsDialog(QWidget *parent) :
     m_thicknessComboBox->setCurrentIndex(Settings::deviceThickness);
 
     m_primaryColorButton = new QToolButton();
-    m_primaryColorButton->setIcon(icon(Settings::primaryColor));
+    m_primaryColorButton->setIcon(QIcon(new SimpleIconEngine(m_primaryColor)));
     connect(m_primaryColorButton, SIGNAL(clicked()), this, SLOT(primaryColorClicked()));
 
     m_secondaryColorButton = new QToolButton();
-    m_secondaryColorButton->setIcon(icon(Settings::secondaryColor));
+    m_secondaryColorButton->setIcon(QIcon(new SimpleIconEngine(m_secondaryColor)));
     connect(m_secondaryColorButton, SIGNAL(clicked()), this, SLOT(secondaryColorClicked()));
 
     m_backgroundColorButton = new QToolButton();
-    m_backgroundColorButton->setIcon(icon(Settings::backgroundColor));
+    m_backgroundColorButton->setIcon(QIcon(new SimpleIconEngine(m_backgroundColor)));
     connect(m_backgroundColorButton, SIGNAL(clicked()), this, SLOT(backgroundColorClicked()));
 
     QPushButton * OKButton = new QPushButton("OK");
@@ -122,26 +123,17 @@ void OptionsDialog::labelsChanged(int state)
 void OptionsDialog::primaryColorClicked()
 {
     QColor color = QColorDialog::getColor(Settings::primaryColor, this, "Primary Color");
-    if(color.isValid()) m_primaryColorButton->setIcon(icon(m_primaryColor = color));
+    if(color.isValid()) m_primaryColorButton->setIcon(QIcon(new SimpleIconEngine(m_primaryColor = color)));
 }
 
 void OptionsDialog::secondaryColorClicked()
 {
     QColor color = QColorDialog::getColor(Settings::secondaryColor, this, "Secondary Color");
-    if(color.isValid()) m_secondaryColorButton->setIcon(icon(m_secondaryColor = color));
+    if(color.isValid()) m_secondaryColorButton->setIcon(QIcon(new SimpleIconEngine(m_secondaryColor = color)));
 }
 
 void OptionsDialog::backgroundColorClicked()
 {
     QColor color = QColorDialog::getColor(Settings::backgroundColor, this, "Background Color");
-    if(color.isValid()) m_backgroundColorButton->setIcon(icon(m_backgroundColor = color));
-}
-
-QIcon OptionsDialog::icon(QColor color)
-{
-    QPixmap pixmap(16, 16);
-    QPainter painter(&pixmap);
-    painter.drawRect(0, 0, 15, 15);
-    painter.fillRect(1, 1, 14, 14, color);
-    return QIcon(pixmap);
+    if(color.isValid()) m_backgroundColorButton->setIcon(QIcon(new SimpleIconEngine(m_backgroundColor = color)));
 }
