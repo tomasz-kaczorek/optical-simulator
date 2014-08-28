@@ -18,13 +18,14 @@ public:
     qreal density() const;
     void setDensity(qreal density);
 
-    void build(bool complete);
+    void build(bool blaze = false, bool density = false);
 private:
     qreal m_radius;
     qreal m_blazeAngle;
     qreal m_density;
     QPointF m_leftEdge;
     QPointF m_rightEdge;
+    QPointF m_blazeHead;
 
 public: //Reflector
     QPointF leftEdge() const override;

@@ -11,21 +11,20 @@ public:
         Zero,
         FirstPositive,
         SecondPositive,
-        Max
+        Max,
+        Size
     };
     Orders();
     Orders(Order order);
     Orders(Orders const & orders);
-    int size();
     void set(Order order, bool state);
     void operator=(Orders const & orders);
     bool operator[](int index) const;
     Orders operator|(Order order) const;
-    Orders operator|(Orders orders) const;
-    void operator|=(Orders orders);
-    Orders operator&(Orders orders);
-    void operator&=(Orders orders);
-    bool operator==(Orders orders);
+    Orders operator|(Orders const & orders) const;
+    void operator|=(Order order);
+    void operator|=(Orders const & orders);
+    bool operator==(Orders const & orders) const;
 private:
     Orders(char orders);
     template<typename T> operator T () const;

@@ -18,10 +18,12 @@ public:
     ~DiffractionGratingForm();
 private slots:
     void geometry();
-    void reflection();
+    void blaze();
+    void density();
 private:
     bool m_geometry;
-    bool m_reflection;
+    bool m_blaze;
+    bool m_density;
     DiffractionGrating * m_diffractionGrating;
     QLineEdit * m_nameLineEdit;
     QDoubleSpinBox * m_xSpinBox;

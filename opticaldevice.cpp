@@ -14,7 +14,7 @@ OpticalDevice::OpticalDevice(OpticalSystem * opticalSystem, QGraphicsItem * pare
     m_normal(nullptr)
 {
     m_pen = QPen(Settings::primaryColor, Settings::deviceThickness, Qt::SolidLine, Qt::RoundCap);
-    setZValue(800.0);
+    setZValue(1.0);
 }
 
 OpticalDevice::~OpticalDevice()

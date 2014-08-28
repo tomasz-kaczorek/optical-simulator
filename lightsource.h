@@ -11,8 +11,6 @@ class LightSource : public OpticalDevice
 protected:
     LightSource(OpticalSystem * opticalSystem, QGraphicsItem * parent = 0);
 public:
-    virtual void plot() = 0;
-    virtual void replot() = 0;
     virtual void replot(Reflector * reflector) = 0;
 };
 

@@ -13,7 +13,8 @@
 DiffractionGratingForm::DiffractionGratingForm(DiffractionGrating * diffractionGrating, OpticalDeviceTabWidget * parent) :
     OpticalDeviceForm(parent),
     m_geometry(false),
-    m_reflection(false),
+    m_blaze(false),
+    m_density(false),
     m_diffractionGrating(diffractionGrating)
 {
     m_nameLineEdit = new QLineEdit();
@@ -91,9 +92,9 @@ DiffractionGratingForm::DiffractionGratingForm(DiffractionGrating * diffractionG
     connect(m_angleSpinBox, SIGNAL(valueChanged(double)), parent, SLOT(changed()));
     connect(m_radiusSpinBox, SIGNAL(valueChanged(double)), this, SLOT(geometry()));
     connect(m_radiusSpinBox, SIGNAL(valueChanged(double)), parent, SLOT(changed()));
-    connect(m_blazeAngleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(changed()));
+    connect(m_blazeAngleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(blaze()));
     connect(m_blazeAngleSpinBox, SIGNAL(valueChanged(double)), parent, SLOT(changed()));
-    connect(m_densitySpinBox, SIGNAL(valueChanged(double)), this, SLOT(reflection()));
+    connect(m_densitySpinBox, SIGNAL(valueChanged(double)), this, SLOT(density()));
     connect(m_densitySpinBox, SIGNAL(valueChanged(double)), parent, SLOT(changed()));
     connect(m_applyButton, SIGNAL(clicked()), this, SLOT(apply()));
     connect(m_applyButton, SIGNAL(clicked()), parent, SLOT(apply()));
@@ -111,9 +112,15 @@ void DiffractionGratingForm::geometry()
     changed();
 }
 
-void DiffractionGratingForm::reflection()
+void DiffractionGratingForm::blaze()
 {
-    m_reflection = true;
+    m_blaze = true;
+    changed();
+}
+
+void DiffractionGratingForm::density()
+{
+    m_density = true;
     changed();
 }
 
@@ -132,17 +139,19 @@ void DiffractionGratingForm::apply()
         m_diffractionGrating->setY(m_ySpinBox->value());
         m_diffractionGrating->setRotation(-m_angleSpinBox->value());
         m_diffractionGrating->setRadius(m_radiusSpinBox->value());
-        m_diffractionGrating->setBlazeAngle(m_blazeAngleSpinBox->value());
+        m_diffractionGrating->setBlazeAngle(-m_blazeAngleSpinBox->value());
         m_diffractionGrating->setDensity(m_densitySpinBox->value());
-        m_diffractionGrating->build(true);
+        m_diffractionGrating->build();
     }
-    else if(m_reflection)
+    else if(m_blaze || m_density)
     {
+        m_diffractionGrating->setBlazeAngle(-m_blazeAngleSpinBox->value());
         m_diffractionGrating->setDensity(m_densitySpinBox->value());
-        m_diffractionGrating->build(false);
+        m_diffractionGrating->build(m_blaze, m_density);
     }
     m_geometry = false;
-    m_reflection = false;
+    m_blaze = false;
+    m_density = false;
     m_applyButton->setEnabled(false);
     m_cancelButton->setEnabled(false);
 }
@@ -155,9 +164,10 @@ void DiffractionGratingForm::cancel()
     m_angleSpinBox->setValue(-m_diffractionGrating->rotation());
     m_radiusSpinBox->setValue(m_diffractionGrating->radius());
     m_densitySpinBox->setValue(m_diffractionGrating->density());
-    m_blazeAngleSpinBox->setValue(m_diffractionGrating->blazeAngle());
+    m_blazeAngleSpinBox->setValue(-m_diffractionGrating->blazeAngle());
     m_geometry = false;
-    m_reflection = false;
+    m_blaze = false;
+    m_density = false;
     m_applyButton->setEnabled(false);
     m_cancelButton->setEnabled(false);
 }

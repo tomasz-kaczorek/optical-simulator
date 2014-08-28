@@ -1,14 +1,14 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include <QGraphicsItem>
+#include <QGraphicsLineItem>
 
 #include "lightsource.h"
 #include "orders.h"
 
 class Reflector;
 
-class Ray : public QGraphicsItem
+class Ray : public QGraphicsLineItem
 {
 public:
     Ray(LightSource * lightSource, qreal x1, qreal y1, qreal x2, qreal y2, unsigned int recursionDepth = 0, Qt::PenStyle style = Qt::SolidLine, QGraphicsItem * parent = 0);
@@ -17,12 +17,11 @@ public:
     Ray(unsigned int recursionDepth, qreal x1, qreal y1, qreal x2, qreal y2, qreal wavelength, Orders const & orders, QPen const & pen, QList<Reflector *> const & reflectors, QGraphicsItem * parent = 0);
     ~Ray();
 
-    QLineF line() const;
     qreal wavelength() const;
     bool order(Orders::Order order) const;
 
     void plot();
-    void replot();
+    void replot(Orders orders);
     void replot(qreal wavelength, QColor color, Orders orders);
     void replot(Reflector * reflector);
 
@@ -30,10 +29,8 @@ public:
     void append(qreal x, qreal y, Orders::Order order);
 private:
     void adjust(qreal adjustment);
-    void remove(int order);
-
-    QPen m_pen;
-    QLineF m_line;
+    void remove(int i);
+    void removeAll();
 
     unsigned int m_recursionDepth;
     qreal m_wavelength;
@@ -41,34 +38,8 @@ private:
     Ray * m_rays[6];
     Reflector * m_reflector;
     QList<Reflector *> const & m_reflectors;
-protected: //QGraphicsItem
-    QRectF boundingRect() const;
+protected: //QGraphicsLineItem
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
-
-//qreal Ray::wavelength()
-//{
-//    return m_lightSource->wavelength();
-//}
-
-//bool Ray::order(int order)
-//{
-//    //returns true if the specified diffraction order is desired but not present
-//    //returns false otherwise
-//    return order >= -2 && order <= 2 && !m_rays[order + 2] && m_lightSource->order(order);
-//}
-
-//void Ray::adjust(qreal adjustment)
-//{
-//    QLineF newLine = line();
-//    newLine.setLength(newLine.length() * adjustment);
-//    setLine(newLine);
-//}
-
-//void Ray::remove(int order)
-//{
-//    delete m_rays[order + 2];
-//    m_rays[order + 2] = nullptr;
-//}
 
 #endif // RAY_H

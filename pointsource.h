@@ -31,7 +31,7 @@ public:
     bool active() const;
     void setActive(bool active);
 
-    void build(bool complete);
+    void build(bool color = false);
     QColor RGB();
 private:
     void addRay(qreal angle);
@@ -46,8 +46,6 @@ private:
     QList<Ray *> m_rays;
 
 public: //LightSource
-    void plot() override;
-    void replot() override;
     void replot(Reflector * reflector) override;
 public: //OpticalDevice
     int type() const override;

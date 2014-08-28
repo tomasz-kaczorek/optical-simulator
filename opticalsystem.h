@@ -63,6 +63,9 @@ private:
 
     QList<Reflector *> m_reflectors;
     QList<LightSource *> m_lightSources;
+
+protected:
+    void drawBackground(QPainter * painter, QRectF const & rect);
 };
 
 #endif // OPTICALSYSTEM_H

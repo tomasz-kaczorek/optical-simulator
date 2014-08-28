@@ -27,7 +27,7 @@ PointSource::PointSource(QString name, qreal x, qreal y, qreal beginAngle, qreal
     m_path.moveTo(0.0, -5.0);
     m_path.lineTo(0.0, 5.0);
     m_color = RGB();
-    build(true);
+    build();
 }
 
 PointSource::~PointSource()
@@ -91,10 +91,17 @@ void PointSource::setActive(bool active)
     m_active = active;
 }
 
-void PointSource::build(bool complete)
+void PointSource::build(bool color)
 {
     prepareGeometryChange();
-    if(complete)
+    if(color)
+    {
+        if(m_active)
+        {
+            foreach(Ray * ray, m_rays) ray->replot(m_wavelength, m_color, m_orders);
+        }
+    }
+    else
     {
         qDeleteAll(m_rays);
         m_rays.clear();
@@ -107,13 +114,6 @@ void PointSource::build(bool complete)
                 for(int i = 0; i < m_quantity; ++i) addRay(m_beginAngle + spanAngle * i / (m_quantity - 1));
             }
             foreach(Ray * ray, m_rays) ray->plot();
-        }
-    }
-    else
-    {
-        if(m_active)
-        {
-            foreach(Ray * ray, m_rays) ray->replot(m_wavelength, m_color, m_orders);
         }
     }
 }
@@ -171,16 +171,6 @@ qreal PointSource::wavelength() const
 QColor PointSource::color() const
 {
     return m_color;
-}
-
-void PointSource::plot()
-{
-    foreach(Ray * ray, m_rays) ray->plot();
-}
-
-void PointSource::replot()
-{
-    foreach(Ray * ray, m_rays) ray->replot();
 }
 
 void PointSource::replot(Reflector * reflector)

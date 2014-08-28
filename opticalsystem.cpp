@@ -31,7 +31,10 @@ OpticalSystem::OpticalSystem(QMainWindow * parent) :
     QGraphicsView(parent),
     m_filename("")
 {
+    setBackgroundBrush(QBrush(Qt::red));
+
     m_scene = new QGraphicsScene(this);
+    m_scene->setItemIndexMethod(QGraphicsScene::NoIndex);
     m_scene->setSceneRect(Settings::minX, Settings::minY, Settings::maxX - Settings::minX, Settings::maxY - Settings::minY);
     m_scene->setBackgroundBrush(QBrush(Settings::backgroundColor));
     setScene(m_scene);
@@ -257,7 +260,11 @@ void OpticalSystem::options()
         Settings::deviceThickness = optionsDialog.deviceThickness();
         Settings::primaryColor = optionsDialog.primaryColor();
         Settings::secondaryColor = optionsDialog.secondaryColor();
-        if(Settings::backgroundColor != optionsDialog.backgroundColor()) m_scene->setBackgroundBrush(QBrush(Settings::backgroundColor = optionsDialog.backgroundColor()));
+        if(Settings::backgroundColor != optionsDialog.backgroundColor())
+        {
+            Settings::backgroundColor = optionsDialog.backgroundColor();
+            invalidateScene(QRectF(), QGraphicsScene::BackgroundLayer);
+        }
         foreach(Reflector * reflector, m_reflectors)
         {
             if(newPen) reflector->newPen();
@@ -285,4 +292,12 @@ void OpticalSystem::options()
             if(hideNormals) lightSource->hideNormal();
         }
     }
+}
+
+void OpticalSystem::drawBackground(QPainter * painter, QRectF const & rect)
+{
+    painter->setPen(Qt::black);
+    painter->fillRect(rect, Qt::darkGray);
+    painter->fillRect(sceneRect(), Settings::backgroundColor);
+    painter->drawRect(sceneRect().adjusted(-1.0, -1.0, 0.0, 0.0));
 }

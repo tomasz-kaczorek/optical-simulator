@@ -17,7 +17,7 @@
 PointSourceForm::PointSourceForm(PointSource * pointSource, OpticalDeviceTabWidget * parent) :
     OpticalDeviceForm(parent),
     m_geometry(false),
-    m_reflection(false),
+    m_color(false),
     m_pointSource(pointSource)
 {
     m_nameLineEdit = new QLineEdit();
@@ -123,19 +123,19 @@ PointSourceForm::PointSourceForm(PointSource * pointSource, OpticalDeviceTabWidg
     connect(m_endAngleSpinBox, SIGNAL(valueChanged(double)), parent, SLOT(changed()));
     connect(m_quantitySpinBox, SIGNAL(valueChanged(int)), this, SLOT(geometry()));
     connect(m_quantitySpinBox, SIGNAL(valueChanged(int)), parent, SLOT(changed()));
-    connect(m_wavelengthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(reflection()));
+    connect(m_wavelengthSpinBox, SIGNAL(valueChanged(double)), this, SLOT(color()));
     connect(m_wavelengthSpinBox, SIGNAL(valueChanged(double)), parent, SLOT(changed()));
-    connect(m_orderCheckBoxes[0], SIGNAL(stateChanged(int)), this, SLOT(reflection()));
+    connect(m_orderCheckBoxes[0], SIGNAL(stateChanged(int)), this, SLOT(color()));
     connect(m_orderCheckBoxes[0], SIGNAL(stateChanged(int)), parent, SLOT(changed()));
-    connect(m_orderCheckBoxes[1], SIGNAL(stateChanged(int)), this, SLOT(reflection()));
+    connect(m_orderCheckBoxes[1], SIGNAL(stateChanged(int)), this, SLOT(color()));
     connect(m_orderCheckBoxes[1], SIGNAL(stateChanged(int)), parent, SLOT(changed()));
-    connect(m_orderCheckBoxes[2], SIGNAL(stateChanged(int)), this, SLOT(reflection()));
+    connect(m_orderCheckBoxes[2], SIGNAL(stateChanged(int)), this, SLOT(color()));
     connect(m_orderCheckBoxes[2], SIGNAL(stateChanged(int)), parent, SLOT(changed()));
-    connect(m_orderCheckBoxes[3], SIGNAL(stateChanged(int)), this, SLOT(reflection()));
+    connect(m_orderCheckBoxes[3], SIGNAL(stateChanged(int)), this, SLOT(color()));
     connect(m_orderCheckBoxes[3], SIGNAL(stateChanged(int)), parent, SLOT(changed()));
-    connect(m_orderCheckBoxes[4], SIGNAL(stateChanged(int)), this, SLOT(reflection()));
+    connect(m_orderCheckBoxes[4], SIGNAL(stateChanged(int)), this, SLOT(color()));
     connect(m_orderCheckBoxes[4], SIGNAL(stateChanged(int)), parent, SLOT(changed()));
-    connect(m_orderCheckBoxes[5], SIGNAL(stateChanged(int)), this, SLOT(reflection()));
+    connect(m_orderCheckBoxes[5], SIGNAL(stateChanged(int)), this, SLOT(color()));
     connect(m_orderCheckBoxes[5], SIGNAL(stateChanged(int)), parent, SLOT(changed()));
     connect(m_activeCheckBox, SIGNAL(stateChanged(int)), this, SLOT(geometry()));
     connect(m_activeCheckBox, SIGNAL(stateChanged(int)), parent, SLOT(changed()));
@@ -179,9 +179,9 @@ void PointSourceForm::geometry()
     changed();
 }
 
-void PointSourceForm::reflection()
+void PointSourceForm::color()
 {
-    m_reflection = true;
+    m_color = true;
     changed();
 }
 
@@ -203,9 +203,9 @@ void PointSourceForm::apply()
         m_pointSource->setOrder(Orders::SecondPositive, m_orderCheckBoxes[Orders::SecondPositive]->isChecked());
         m_pointSource->setOrder(Orders::Max, m_orderCheckBoxes[Orders::Max]->isChecked());
         m_pointSource->setActive(m_activeCheckBox->isChecked());
-        m_pointSource->build(true);
+        m_pointSource->build();
     }
-    else if(m_reflection)
+    else if(m_color)
     {
         m_pointSource->setWavelength(m_wavelengthSpinBox->value());
         m_pointSource->setOrder(Orders::SecondNegative, m_orderCheckBoxes[Orders::SecondNegative]->isChecked());
@@ -214,10 +214,10 @@ void PointSourceForm::apply()
         m_pointSource->setOrder(Orders::FirstPositive, m_orderCheckBoxes[Orders::FirstPositive]->isChecked());
         m_pointSource->setOrder(Orders::SecondPositive, m_orderCheckBoxes[Orders::SecondPositive]->isChecked());
         m_pointSource->setOrder(Orders::Max, m_orderCheckBoxes[Orders::Max]->isChecked());
-        m_pointSource->build(false);
+        m_pointSource->build(true);
     }
     m_geometry = false;
-    m_reflection = false;
+    m_color = false;
     m_applyButton->setEnabled(false);
     m_cancelButton->setEnabled(false);
 }
@@ -239,7 +239,7 @@ void PointSourceForm::cancel()
     m_orderCheckBoxes[5]->setChecked(m_pointSource->order(Orders::Max));
     m_activeCheckBox->setChecked(m_pointSource->active());
     m_geometry = false;
-    m_reflection = false;
+    m_color = false;
     m_applyButton->setEnabled(false);
     m_cancelButton->setEnabled(false);
 }

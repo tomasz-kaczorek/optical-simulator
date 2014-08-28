@@ -15,11 +15,6 @@ Orders::Orders(const Orders & orders) :
 {
 }
 
-int Orders::size()
-{
-    return 6;
-}
-
 void Orders::set(Orders::Order order, bool state)
 {
     m_orders = (m_orders & ~(1<<order)) | (state<<order);
@@ -40,27 +35,22 @@ Orders Orders::operator|(Orders::Order order) const
     return Orders(m_orders | (1 << order));
 }
 
-Orders Orders::operator|(Orders orders) const
+Orders Orders::operator|(Orders const & orders) const
 {
     return Orders(m_orders | orders.m_orders);
 }
 
-void Orders::operator|=(Orders orders)
+void Orders::operator|=(Orders::Order order)
+{
+    m_orders |= (1 << order);
+}
+
+void Orders::operator|=(const Orders & orders)
 {
     m_orders |= orders.m_orders;
 }
 
-Orders Orders::operator&(Orders orders)
-{
-    return Orders(m_orders & orders.m_orders);
-}
-
-void Orders::operator&=(Orders orders)
-{
-    m_orders &= orders.m_orders;
-}
-
-bool Orders::operator==(Orders orders)
+bool Orders::operator==(Orders const & orders) const
 {
     return m_orders == orders.m_orders;
 }

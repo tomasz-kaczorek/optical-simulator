@@ -22,10 +22,10 @@ public:
 private slots:
     void aim();
     void geometry();
-    void reflection();
+    void color();
 private:
     bool m_geometry;
-    bool m_reflection;
+    bool m_color;
     PointSource * m_pointSource;
     QLineEdit * m_nameLineEdit;
     QDoubleSpinBox * m_xSpinBox;
