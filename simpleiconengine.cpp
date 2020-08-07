@@ -12,3 +12,8 @@ void SimpleIconEngine::paint(QPainter * painter, const QRect & rect, QIcon::Mode
     painter->drawRect(rect.adjusted(0, 0, -1, -1));
     painter->fillRect(rect.adjusted(1, 1, -1, -1), QBrush(m_color));
 }
+
+QIconEngine *SimpleIconEngine::clone() const
+{
+    return new SimpleIconEngine(m_color);
+}

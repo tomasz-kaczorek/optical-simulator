@@ -5,12 +5,14 @@
 #-------------------------------------------------
 
 QT       += core gui
+#CONFIG   += static
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Simulator
 TEMPLATE = app
 QMAKE_CXXFLAGS += -std=c++11
+#sQMAKE_LFLAGS += -static -static-libgcc -static-libstdc++
 
 SOURCES += main.cpp\
     mainwindow.cpp \

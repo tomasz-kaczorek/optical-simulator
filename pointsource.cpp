@@ -120,45 +120,66 @@ void PointSource::build(bool color)
 
 QColor PointSource::RGB()
 {
-    qreal R, G, B;
-
-    if (m_wavelength <= 780.0 && m_wavelength >= 645.0){
-        R = m_wavelength > 700.0 ? 255.0 * (0.3 + 0.7 * (780.0 - m_wavelength) / 80.0) : 255.0;
-        G = B = 0.0;
+    double t;
+    double R = 0.0;
+    double G = 0.0;
+    double B = 0.0;
+    if((m_wavelength >= 400.0) && (m_wavelength < 410.0))
+    {
+        t = (m_wavelength - 400.0) / (410.0 - 400.0);
+        R = (0.28 * t) - (0.14 * t * t);
     }
-    else if (m_wavelength >= 580.0){
-        R = 255.0;
-        G = 255.0 * (645.0 - m_wavelength) / 65.0;
-        B = 0.0;
+    else if((m_wavelength >= 410.0) && (m_wavelength < 475.0))
+    {
+        t = (m_wavelength - 410.0) / (475.0 - 410.0);
+        R = 0.14 - (0.14 * t * t);
     }
-    else if (m_wavelength >= 510.0){
-        R = 255.0 * (m_wavelength - 510.0) / 70.0;
-        G = 255.0;
-        B = 0.0;
+    else if((m_wavelength >= 545.0) && (m_wavelength < 595.0))
+    {
+        t = (m_wavelength - 545.0) / (595.0 - 545.0);
+        R = (1.98 * t) - (t * t);
     }
-    else if (m_wavelength >= 490.0){
-        R = 0.0;
-        G = 255.0;
-        B = 255.0 * (510.0 - m_wavelength) / 20.0;
+    else if((m_wavelength >= 595.0) && (m_wavelength < 650.0))
+    {
+        t = (m_wavelength - 595.0) / (650.0 - 595.0);
+        R = 0.98 + (0.06 * t)-(0.40 * t * t);
     }
-    else if (m_wavelength >= 440.0){
-        R = 0.0;
-        G = 255.0 * (m_wavelength - 440.0) / 50.0;
-        B = 255.0;
+    else if((m_wavelength >= 650.0) && (m_wavelength < 700.0))
+    {
+        t = (m_wavelength - 650.0) / (700.0 - 650.0);
+        R = 0.64 - (0.84 * t) + (0.20 * t * t);
     }
-    else if (m_wavelength >= 380.0){
-        R = B = m_wavelength < 420.0 ? 255.0 * (0.3 + 0.7 * (m_wavelength - 350.0) / 70.0) : 255.0;
-        R *= (440.0 - m_wavelength) / 90.0;
-        G = 0.0;
+    if((m_wavelength >= 415.0) && (m_wavelength < 475.0))
+    {
+        t = (m_wavelength - 415.0) / (475.0 - 415.0);
+        G = (0.80 * t * t);
     }
-    else R = G = B = 0.0;
-
-    return QColor(R, G, B);
+    else if((m_wavelength >= 475.0) && (m_wavelength < 590.0))
+    {
+        t = (m_wavelength - 475.0) / (590.0 - 475.0);
+        G = 0.8 + (0.76 * t) - (0.80 * t * t);
+    }
+    else if((m_wavelength >= 585.0) && (m_wavelength < 639.0))
+    {
+        t = (m_wavelength - 585.0) / (639.0 - 585.0);
+        G = 0.84 - (0.84 * t);
+    }
+    if((m_wavelength >= 400.0) && (m_wavelength < 475.0))
+    {
+        t = (m_wavelength - 400.0) / (475.0 - 400.0);
+        B = (2.20 * t) - (1.50 * t * t);
+    }
+    else if((m_wavelength >= 475.0) && (m_wavelength < 560.0))
+    {
+        t = (m_wavelength - 475.0) / (560.0 - 475.0);
+        B = 0.7 - (t) + (0.30 * t * t);
+    }
+    return QColor(R * 255.0, G*255.0, B*255.0);
 }
 
 void PointSource::addRay(qreal angle)
 {
-    Ray * ray = new Ray(x(), y(), angle, m_wavelength, m_orders, QPen(color()), reflectors());
+    Ray * ray = new Ray(x(), y(), angle, m_wavelength, m_orders, QPen(color(), 0.0), reflectors());
     m_rays.append(ray);
     m_opticalSystem->scene()->addItem(ray);
 }

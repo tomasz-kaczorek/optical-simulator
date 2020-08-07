@@ -1,14 +1,14 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include <QGraphicsLineItem>
+#include <QGraphicsItem>
 
 #include "lightsource.h"
 #include "orders.h"
 
 class Reflector;
 
-class Ray : public QGraphicsLineItem
+class Ray : public QGraphicsItem
 {
 public:
     Ray(LightSource * lightSource, qreal x1, qreal y1, qreal x2, qreal y2, unsigned int recursionDepth = 0, Qt::PenStyle style = Qt::SolidLine, QGraphicsItem * parent = 0);
@@ -17,6 +17,7 @@ public:
     Ray(unsigned int recursionDepth, qreal x1, qreal y1, qreal x2, qreal y2, qreal wavelength, Orders const & orders, QPen const & pen, QList<Reflector *> const & reflectors, QGraphicsItem * parent = 0);
     ~Ray();
 
+    QLineF line() const;
     qreal wavelength() const;
     bool order(Orders::Order order) const;
 
@@ -32,13 +33,16 @@ private:
     void remove(int i);
     void removeAll();
 
+    QPen m_pen;
+    QLineF m_line;
     unsigned int m_recursionDepth;
     qreal m_wavelength;
     Orders m_orders;
     Ray * m_rays[6];
     Reflector * m_reflector;
     QList<Reflector *> const & m_reflectors;
-protected: //QGraphicsLineItem
+protected: //QGraphicsItem
+    QRectF boundingRect() const;
     void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
 };
 

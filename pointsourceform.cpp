@@ -35,12 +35,12 @@ PointSourceForm::PointSourceForm(PointSource * pointSource, OpticalDeviceTabWidg
     m_beginAngleSpinBox = new PreciseDoubleSpinBox();
     m_beginAngleSpinBox->setDecimals(Settings::decimals);
     m_beginAngleSpinBox->setRange(Settings::minAngle, Settings::maxAngle);
-    m_beginAngleSpinBox->setSuffix("\260");
+    m_beginAngleSpinBox->setSuffix(QString::fromUtf8("\u00B0"));
 
     m_endAngleSpinBox = new PreciseDoubleSpinBox();
     m_endAngleSpinBox->setDecimals(Settings::decimals);
     m_endAngleSpinBox->setRange(Settings::minAngle, Settings::maxAngle);
-    m_endAngleSpinBox->setSuffix("\260");
+    m_endAngleSpinBox->setSuffix(QString::fromUtf8("\u00B0"));
 
     m_quantitySpinBox = new QSpinBox();
     m_quantitySpinBox->setRange(Settings::minQuantity, Settings::maxQuantity);

@@ -32,7 +32,7 @@ DiffractionGratingForm::DiffractionGratingForm(DiffractionGrating * diffractionG
     m_angleSpinBox = new PreciseDoubleSpinBox();
     m_angleSpinBox->setDecimals(Settings::decimals);
     m_angleSpinBox->setRange(Settings::minAngle, Settings::maxAngle);
-    m_angleSpinBox->setSuffix("\260");
+    m_angleSpinBox->setSuffix(QString::fromUtf8("\u00B0"));
 
     m_radiusSpinBox = new PreciseDoubleSpinBox();
     m_radiusSpinBox->setDecimals(Settings::decimals);
@@ -42,7 +42,7 @@ DiffractionGratingForm::DiffractionGratingForm(DiffractionGrating * diffractionG
     m_blazeAngleSpinBox = new PreciseDoubleSpinBox();
     m_blazeAngleSpinBox->setDecimals(Settings::decimals);
     m_blazeAngleSpinBox->setRange(Settings::minBlazingAngle, Settings::maxBlazingAngle);
-    m_blazeAngleSpinBox->setSuffix("\260");
+    m_blazeAngleSpinBox->setSuffix(QString::fromUtf8("\u00B0"));
 
     m_densitySpinBox = new PreciseDoubleSpinBox();
     m_densitySpinBox->setDecimals(Settings::decimals);

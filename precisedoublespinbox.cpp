@@ -17,6 +17,7 @@ QString PreciseDoubleSpinBox::textFromValue(double value) const
     QString text = QWidget::locale().toString(value, 'f', m_precision);
     text.remove(QRegExp("0+$"));
     text.remove(QRegExp("\\.$"));
+    text.remove(QRegExp("\\,$"));
     return text;
 }
 

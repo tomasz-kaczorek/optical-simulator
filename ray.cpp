@@ -8,35 +8,40 @@
 #include <float.h>
 
 Ray::Ray(qreal x, qreal y, qreal angle, qreal wavelength, const Orders & orders, const QPen & pen, QList<Reflector *> const & reflectors, QGraphicsItem * parent) :
-    QGraphicsLineItem(x, y, x + 1, y, parent),
+    QGraphicsItem(parent),
+    m_pen(pen),
+    m_line(x, y, x + 1, y),
     m_recursionDepth(0),
     m_wavelength(wavelength),
     m_orders(orders),
     m_reflector(nullptr),
     m_reflectors(reflectors)
 {
-    QLineF l = line();
-    l.setAngle(angle);
-    setLine(l);
-    setPen(pen);
+    m_line.setAngle(angle);
     for(int i = 0; i < Orders::Size; ++i) m_rays[i] = nullptr;
 }
 
 Ray::Ray(unsigned int recursionDepth, qreal x1, qreal y1, qreal x2, qreal y2, qreal wavelength, const Orders & orders, const QPen & pen, QList<Reflector *> const & reflectors, QGraphicsItem * parent) :
-    QGraphicsLineItem(x1, y1, x2, y2, parent),
+    QGraphicsItem(parent),
+    m_pen(pen),
+    m_line(x1, y1, x2, y2),
     m_recursionDepth(recursionDepth),
     m_wavelength(wavelength),
     m_orders(orders),
     m_reflector(nullptr),
     m_reflectors(reflectors)
 {
-    setPen(pen);
     for(int i = 0; i < Orders::Size; ++i) m_rays[i] = nullptr;
 }
 
 Ray::~Ray()
 {
     if(m_reflector) m_reflector->removeRay(this);
+}
+
+QLineF Ray::line() const
+{
+    return m_line;
 }
 
 qreal Ray::wavelength() const
@@ -51,9 +56,9 @@ bool Ray::order(Orders::Order order) const
 
 void Ray::append(qreal x, qreal y)
 {
-    if(m_recursionDepth < Settings::allowedRecursionDepth)
+    if(m_recursionDepth < Settings::allowedRecursionDepth && m_rays[Orders::Zero] == nullptr)
     {
-        m_rays[Orders::Zero] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, pen(), m_reflectors, this);
+        m_rays[Orders::Zero] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, m_pen, m_reflectors, this);
         m_rays[Orders::Zero]->plot();
     }
 }
@@ -63,27 +68,27 @@ void Ray::append(qreal x, qreal y, Orders::Order order)
     switch(order)
     {
         case Orders::SecondNegative:
-            m_rays[Orders::SecondNegative] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(pen().brush(), 0.0, Qt::DotLine), m_reflectors, this);
+            m_rays[Orders::SecondNegative] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(m_pen.brush(), 0.0, Qt::DotLine), m_reflectors, this);
             m_rays[Orders::SecondNegative]->plot();
             return;
         case Orders::FirstNegative:
-            m_rays[Orders::FirstNegative] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(pen().brush(), 0.0, Qt::DashLine), m_reflectors, this);
+            m_rays[Orders::FirstNegative] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(m_pen.brush(), 0.0, Qt::DashLine), m_reflectors, this);
             m_rays[Orders::FirstNegative]->plot();
             return;
         case Orders::Zero:
-            m_rays[Orders::Zero] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(pen().brush(), 0.0, Qt::SolidLine), m_reflectors, this);
+            m_rays[Orders::Zero] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(m_pen.brush(), 0.0, Qt::SolidLine), m_reflectors, this);
             m_rays[Orders::Zero]->plot();
             return;
         case Orders::FirstPositive:
-            m_rays[Orders::FirstPositive] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(pen().brush(), 0.0, Qt::DashLine), m_reflectors, this);
+            m_rays[Orders::FirstPositive] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(m_pen.brush(), 0.0, Qt::DashLine), m_reflectors, this);
             m_rays[Orders::FirstPositive]->plot();
             return;
         case Orders::SecondPositive:
-            m_rays[Orders::SecondPositive] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(pen().brush(), 0.0, Qt::DotLine), m_reflectors, this);
+            m_rays[Orders::SecondPositive] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(m_pen.brush(), 0.0, Qt::DotLine), m_reflectors, this);
             m_rays[Orders::SecondPositive]->plot();
             return;
         case Orders::Max:
-            m_rays[Orders::Max] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(pen().brush(), 0.0, Qt::SolidLine), m_reflectors, this);
+            m_rays[Orders::Max] = new Ray(m_recursionDepth + 1, line().x2(), line().y2(), x, y, m_wavelength, m_orders, QPen(m_pen.brush(), 0.0, Qt::SolidLine), m_reflectors, this);
             m_rays[Orders::Max]->plot();
             return;
         default:
@@ -93,9 +98,9 @@ void Ray::append(qreal x, qreal y, Orders::Order order)
 
 void Ray::adjust(qreal adjustment)
 {
-    QLineF l = line();
-    l.setLength(l.length() * adjustment);
-    setLine(l);
+    prepareGeometryChange();
+    //m_line.setP2(m_line.p1() + (m_line.p2() - m_line.p1()) * adjustment);
+    m_line.setLength(m_line.length() * adjustment);
 }
 
 void Ray::remove(int i)
@@ -128,9 +133,12 @@ void Ray::plot()
             m_reflector = reflector;
         }
     }
+    if(m_reflector)
+    {
     adjust(bestAdjustment);
     m_reflector->addRay(this);
     m_reflector->reflect(this);
+    }
 }
 
 void Ray::replot(Orders orders)
@@ -143,7 +151,7 @@ void Ray::replot(Orders orders)
         }
         else if(m_rays[i])
         {
-            if(m_orders[i]) m_rays[i]->replot(m_wavelength, pen().color(), m_orders);
+            if(m_orders[i]) m_rays[i]->replot(m_wavelength, m_pen.color(), m_orders);
             else remove(i);
         }
     }
@@ -153,9 +161,7 @@ void Ray::replot(Orders orders)
 void Ray::replot(qreal wavelength, QColor color, Orders orders)
 {
     prepareGeometryChange();
-    QPen p = pen();
-    p.setColor(color);
-    setPen(p);
+    m_pen.setColor(color);
     m_wavelength = wavelength;
     m_orders = orders;
     replot(Orders::SecondNegative | Orders::FirstNegative | Orders::FirstPositive | Orders::SecondPositive);
@@ -179,9 +185,15 @@ void Ray::replot(Reflector * reflector)
     }
 }
 
+QRectF Ray::boundingRect() const
+{
+    return QRectF(qMin(m_line.x1(), m_line.x2()), qMin(m_line.y1(), m_line.y2()), qAbs(m_line.dx()), qAbs(m_line.dy()));
+}
+
 void Ray::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setCompositionMode(QPainter::CompositionMode_Plus);
-    QGraphicsLineItem::paint(painter, option, widget);
+    painter->setPen(m_pen);
+    painter->drawLine(m_line);
 }

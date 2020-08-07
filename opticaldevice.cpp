@@ -82,7 +82,7 @@ QString OpticalDevice::name() const
 
 void OpticalDevice::setName(QString name)
 {
-    if(m_label) m_label->setText(name);
+    if(m_label) m_label->setName(name);
 }
 
 QList<Reflector *> const & OpticalDevice::reflectors()

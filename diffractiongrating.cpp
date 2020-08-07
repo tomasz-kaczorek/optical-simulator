@@ -197,19 +197,13 @@ void DiffractionGrating::reflect(Ray * ray) const
     }
     if(ray->order(Orders::Max))
     {
-        //find a vector (gdx, gdy) perpedicular to diffraction grating surface
         gdx = m_blazeHead.x();
         gdy = m_blazeHead.y();
-        //plug: (x = gx + d * gdx) and (y = gy + d * gdy) into distance equation between (rx, ry) and (x, y): sqrt((x - rx) ^ 2 + (y - ry) ^ 2)
-        //abandon the root (as it is irrelevant) and minimize result to find projection of (rx, ry) on line perpedicular to diffraction grating's surface
-        //parabola's tip is located at d = -b / 2 * a
         d = (gdx * (rx - gx) + gdy * (ry - gy)) / (gdx * gdx + gdy * gdy);
-        nx = gx + d * gdx; //x coordinate of (rx, ry) projection on normal
-        ny = gy + d * gdy; //y coordinate of (rx, ry) projection on normal
-        gdx = m_leftEdge.x() - m_rightEdge.x(); //horizontal component of the line between diffraction grating's edges
-        gdy = m_leftEdge.y() - m_rightEdge.y(); //vertical component of the line between diffraction grating's edges
-        //calculate on which side of a diffraction grating does the ray begin
-        //if it begins on the back side, return as there will be no reflection
+        nx = gx + d * gdx;
+        ny = gy + d * gdy;
+        gdx = m_leftEdge.x() - m_rightEdge.x();
+        gdy = m_leftEdge.y() - m_rightEdge.y();
         if(Settings::fuzzyIsGreaterThanOrEqualToZero(gdy * (2.0 * nx - gx) - gdx * (2.0 * ny - gy))) return;
         ray->append(2.0 * nx - rx, 2.0 * ny - ry, Orders::Max);
     }

@@ -9,7 +9,6 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QPlastiqueStyle>
 #include <QPushButton>
 #include <QStringList>
 #include <QVBoxLayout>
@@ -42,7 +41,6 @@ AimDialog::AimDialog(OpticalDevice * opticalDevice, QWidget * parent) :
     m_endAngleReflectorComboBox->addItems(names);
 
     QGroupBox * beginAngleGroupBox = new QGroupBox("Begin Angle");
-    beginAngleGroupBox->setStyle(new QPlastiqueStyle());
 
     QHBoxLayout * beginAngleLayout = new QHBoxLayout();
 
@@ -52,7 +50,6 @@ AimDialog::AimDialog(OpticalDevice * opticalDevice, QWidget * parent) :
     beginAngleLayout->addWidget(m_beginAngleReflectorComboBox);
 
     QGroupBox * endAngleGroupBox = new QGroupBox("End Angle");
-    endAngleGroupBox->setStyle(new QPlastiqueStyle());
 
     QHBoxLayout * endAngleLayout = new QHBoxLayout();
 
